@@ -1,0 +1,7 @@
+Triangles.vcxproj
+Triangles.vcxproj.filters
+Triangles.vcxproj.user
+Debug/
+x64/
+.git/
+build/

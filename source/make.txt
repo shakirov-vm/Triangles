@@ -1,0 +1,1 @@
+g++ main.cpp ./Triangle/triangle.cpp ./Sort/sort.cpp -o exe.exe

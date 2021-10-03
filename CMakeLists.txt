@@ -1,0 +1,4 @@
+﻿cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
+project(Triangles)
+
+add_executable(Triangles main.cpp ./Triangle/triangle.cpp ./Sort/sort.cpp)
