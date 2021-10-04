@@ -1,1 +1,3 @@
 g++ main.cpp ./Triangle/triangle.cpp ./Sort/sort.cpp -o exe.exe
+./exe.exe Tests/input_1.txt
+

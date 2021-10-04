@@ -1,6 +1,7 @@
+#pragma once
 #include <vector>
+#include <math.h>
 
-void take_triangles(vector<double> triangles, char* input_file);
 
 struct Point {
 	double x = NAN;
@@ -11,26 +12,24 @@ struct Point {
 	bool is_valid();
 };    
 
+struct Projection {
+	double left;
+	double right;
+};
+
 struct Triangle {
 	Point A;
 	Point B;
 	Point C;
 
-	segment x_seg;
+	size_t id;
+
+	Projection x_proj;
 
 	bool intersection = false;
-	void get_x_segment(); // Potential is rudyment
+	void get_x_projection(); // Potential is rudyment
 	
 };
 
-void Triangle::get_x_segment() {
-	x_seg.left = std::min(std::min(A.x, B.x), C.x); //fmin??
-	x_seg.right = std::max(std:max(A.x, B.x), C.x); //fmax??
-}
+void take_triangles(std::vector<Triangle>& triangles, std::string input_file);
 
-struct Segment {
-	Point left;
-	Point right;
-
-
-};
