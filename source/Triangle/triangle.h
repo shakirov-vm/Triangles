@@ -8,8 +8,10 @@ struct Point {
 	double y = NAN;
 	double z = NAN;
 
-	void print();
-	bool is_valid();
+	Point(double x_, double y_, double z_) : x(x_), y(y_), z(z_) {} // i hope it true;
+
+	//void print();
+	//bool is_valid();
 };    
 
 struct Projection {

@@ -39,7 +39,4 @@ void sort_triangles(std::vector<Triangle>& triangles) {
 bool compare_proj(Triangle& first, Triangle& second) {
 	return first.x_proj.left < second.x_proj.left; // ??
 }
-/*
-bool equal_double(double& first, double& second) {
-	return std::abs(first - second) < eps;
-}*/
+
