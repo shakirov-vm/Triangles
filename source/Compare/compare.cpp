@@ -2,42 +2,37 @@
 #include <iostream>
 
 #include "../Triangle/triangle.h"
+#include "compare.h"
 
-void compare_triangles (Triangle& first, Triangle& second) {
+void compare_triangles (Triangle& zero, Triangle& first) {
+
+	// Check that triangles is true triangle
+
+	Surface zero_surf(zero);
+	SignDist V_1(zero_surf, first);
+	if (std::max({V_1.dist_V_0, V_1.dist_V_1, V_1.dist_V_2}) < 0 || std::min({V_1.dist_V_0, V_1.dist_V_1, V_1.dist_V_2}) > 0) return; //false
+
 	Surface first_surf(first);
-	Surface second_surf(second);
+	SignDist V_0(first_surf, zero);
+	if (std::max({V_0.dist_V_0, V_0.dist_V_1, V_0.dist_V_2}) < 0 || std::min({V_0.dist_V_0, V_0.dist_V_1, V_0.dist_V_2}) > 0) return; //false
 
-	//if (first_surf.D_surf == second_surf.D_surf) return; // Dont intersect
-	//if (first_surf.D_surf )
+	if ((zero_surf.A_surf == first_surf.A_surf) && (zero_surf.B_surf == first_surf.B_surf) && (zero_surf.C_surf == first_surf.C_surf)) {
+		if (zero_surf.D_surf != first_surf.D_surf) return; // false
+		if (zero_surf.D_surf == first_surf.D_surf) {
+			//Compare2D;
+		}
+	}
 
-	Line main(first_surf, second_surf);
+	Line main(zero_surf, first_surf);
+										// ???
+	Projection proj_from_zero (zero, main, V_0);
+	Projection proj_from_first (first, main, V_1);
 
-	Line first_AB(first.A, first.B);
-	Line first_AC(first.A, first.C);
-	Line first_BC(first.B, first.C);
-
-	Line second_AB(second.A, second.B);
-	Line second_AC(second.A, second.C);
-	Line second_BC(second.B, second.C);
-// It is V hatch
-	Point first_0(main, first.A);
-	Point first_1(main, first.B);
-	Point first_2(main, first.C);
-
-	Point second_0(main, second.A);
-	Point second_1(main, second.B);
-	Point second_2(main, second.C);
-// It is t							   // ???????????????????????????????????
-	Point first_t_begin(first_0, first_2, get_dist(first.A), get_dist(first.C)); 
-	Point first_t_end(first_1, first_2, get_dist(first.B), get_dist(first.C));
-
-	Point second_t_begin(second_0, second_2, get_dist(second.A), get_dist(second.C));
-	Point second_t_end(second_0, second_2, get_dist(second.A), get_dist(second.C));
-
+	//Compare projection
 }
 
-bool equal_double(double first, double second) {
-	return std::abs(first - second) < eps;
+bool equal_double(double zero, double first) {
+	return std::abs(zero - first) < eps;
 }
 
 bool intesect_seg()

@@ -20,6 +20,25 @@ struct Surface {
 		C_surf = trian.A.x * (trian.B.y - trian.C.y) + trian.B.x * (trian.C.y - trian.A.y) + trian.C.x * (trian.A.y - trian.B.y);
 
 		D_surf = - A_surf * trian.A.x - B_surf * trian.A.y - C_surf * trian.A.z; 
+
+		double normalize = 1 / sqrt(A_surf * A_surf + B_surf * B_surf + C_surf * C_surf);
+
+		A_surf *= normalize;
+		B_surf *= normalize;
+		C_surf *= normalize;
+		D_surf *= normalize;
+	}
+};
+
+struct SignDist {
+	double dist_V_0;
+	double dist_V_1;
+	double dist_V_2;
+
+	SignDist (Surface& surf, Triangle& trian) { // Very big QUESTION!! // Doing more smart
+		dist_V_0 = trian.A.x * surf.A_surf + trian.A.y * surf.B_surf + trian.A.z * surf.C_surf + surf.D_surf;
+		dist_V_1 = trian.B.x * surf.A_surf + trian.B.y * surf.B_surf + trian.B.z * surf.C_surf + surf.D_surf;
+		dist_V_2 = trian.C.x * surf.A_surf + trian.C.y * surf.B_surf + trian.C.z * surf.C_surf + surf.D_surf;
 	}
 };
 
@@ -32,7 +51,7 @@ struct Line {
 
 	//tau is always 1
 
-	Line(Surface& one, Surface& two) {
+	Line(Surface& one, Surface& two) { // It's can be bad
 		
 		if (!equal_double(one.A_surf, 0) && !equal_double(two.A_surf * one.B_surf - one.A_surf * two.B_surf, 0)) {
 			starting.x = (one.B_surf * two.D_surf - two.B_surf * one.D_surf) / (two.A_surf * one.B_surf - one.A_surf * two.B_surf);
