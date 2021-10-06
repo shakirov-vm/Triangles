@@ -1,6 +1,9 @@
 
 void compare_triangles (Triangle& first, Triangle& second);
 bool equal_double(double first, double second);
+double get_dist(Point& first, Point& second);
+
+#include <math.h>
 
 #define eps 0.0000001
 
@@ -84,3 +87,22 @@ struct Line {
 		z_proj = two.z - one.z;
 	}
 };
+
+struct Edge {
+	Point begin;
+	Point end;
+
+	double dist;
+
+	Edge(Point& first, Point& second) {
+		begin = first;
+		end = second;
+
+		dist = get_dist(first, second);
+	}
+};
+
+double get_dist(Point& first, Point& second) {
+	
+	return sqrt((first.x - second.x) * (first.x - second.x) + (first.y - second.y) * (first.y - second.y) + (first.z - second.z) * (first.z - second.z));
+}
