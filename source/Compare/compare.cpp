@@ -24,11 +24,15 @@ void compare_triangles (Triangle& zero, Triangle& first) {
 	}
 
 	Line main(zero_surf, first_surf);
-										// ???
-	Projection proj_from_zero (zero, main, V_0);
-	Projection proj_from_first (first, main, V_1);
+	// There need SORT POINTS!!!
+	Projection zero_proj (main, zero.A, zero.B, zero.C, V_0);
+	Projection first_proj (main, first.A, first.B, first.C, V_1);
 
-	//Compare projection
+	if (intersect(zero_proj, first_proj)) {
+		zero.intersect = true;
+		first.intersect = true;
+	}
+	return;
 }
 
 bool equal_double(double zero, double first) {

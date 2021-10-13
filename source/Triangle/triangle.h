@@ -30,7 +30,20 @@ struct Point {
 	}
 	//void print();
 	bool is_valid();
+
+	friend Point operator+(Point& first, Point& second);
+	friend Point operator+(Point& first, Point& second);
+	
 };    
+
+// maybe ref?
+Point operator+(Point& first, Point& second) {
+	return Point(first.x + second.x, first.y + second.y, first.z + second.z);
+}
+Point operator-(Point& first, Point& second) {
+	return Point(first.x - second.x, first.y - second.y, first.z - second.z);
+}
+
 
 struct Projection {
 	//double??
@@ -71,9 +84,26 @@ struct Projection {
 		left = V_0_hatch + (V_2_hatch - V_0_hatch) * dist.dist_V_0 / (dist.dist_V_0 - dist.dist_V_2);
 		right = V_1_hatch + (V_2_hatch - V_1_hatch) * dist.dist_V_1 / (dist.dist_V_1 - dist.dist_V_2);
 	}
+	Projection(Line& main, Point& first, Point& second, Point& reverse_side, SignDist& sign) {
+		double scalar_0 = main.x_proj * (first.x - main.starting.x) + main.y_proj * (first.y - main.starting.y) + main.z_proj * (first.z - main.starting.z);
+		double scalar_0 = main.x_proj * (second.x - main.starting.x) + main.y_proj * (second.y - main.starting.y) + main.z_proj * (second.z - main.starting.z);
+		double scalar_0 = main.x_proj * (reverse_side.x - main.starting.x) + main.y_proj * (reverse_side.y - main.starting.y) + main.z_proj * (reverse_side.z - main.starting.z);
+
+		left = scalar_0 + (scalar_2 - scalar_0) * sign.dist_V_0 / (sign.dist_V_0 - sign.dist_V_2);
+		right = scalar_1 + (scalar_2 - scalar_1) * sign.dist_V_1 / (sign.dist_V_1 - sign.dist_V_2);
+
+		if (left > right) std::swap(left, right);
+	}
+	bool intersect(Projection& first, Projection& second) {
+		if (first.left > second.right || second.left > first.right) return true;
+
+		return false;
+	}
 };
 
 struct Triangle {
+	bool intersect = false;
+
 	Point A;
 	Point B;
 	Point C;
