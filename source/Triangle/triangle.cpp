@@ -7,6 +7,18 @@
 #include <string>
 
 #include "../Triangle/triangle.h"
+
+// maybe ref?
+Point operator+(Point& first, Point& second) {
+    return Point(first.x + second.x, first.y + second.y, first.z + second.z);
+}
+Point operator-(Point& first, Point& second) {
+    return Point(first.x - second.x, first.y - second.y, first.z - second.z);
+}
+
+bool equal_double(double zero, double first) {
+    return std::abs(zero - first) < eps;
+}
                                                       // ??
 void take_triangles(std::vector<Triangle>& triangles, std::string input_file) {
 
@@ -38,8 +50,13 @@ void take_triangles(std::vector<Triangle>& triangles, std::string input_file) {
     std::cout << "File [" << input_file << "] can't be open. Failed\n"; // Exception?
 }
 
-
 void Triangle::get_x_projection() {
     x_proj.left = std::min(std::min(A.x, B.x), C.x); //fmin??
     x_proj.right = std::max(std::max(A.x, B.x), C.x); //fmax??
+}
+
+bool intersect(Projection& first, Projection& second) {
+    if (first.left > second.right || second.left > first.right) return true;
+
+    return false;
 }

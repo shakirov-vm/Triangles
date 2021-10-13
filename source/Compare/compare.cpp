@@ -19,6 +19,7 @@ void compare_triangles (Triangle& zero, Triangle& first) {
 	if ((zero_surf.A_surf == first_surf.A_surf) && (zero_surf.B_surf == first_surf.B_surf) && (zero_surf.C_surf == first_surf.C_surf)) {
 		if (zero_surf.D_surf != first_surf.D_surf) return; // false
 		if (zero_surf.D_surf == first_surf.D_surf) {
+			printf("Need write Compare2D\n");
 			//Compare2D;
 		}
 	}
@@ -34,9 +35,3 @@ void compare_triangles (Triangle& zero, Triangle& first) {
 	}
 	return;
 }
-
-bool equal_double(double zero, double first) {
-	return std::abs(zero - first) < eps;
-}
-
-bool intesect_seg()
