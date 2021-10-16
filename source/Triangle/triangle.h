@@ -1,18 +1,48 @@
 #pragma once
 #include <vector>
 #include <math.h>
+#include <algorithm>
 
 bool equal_double(double first, double second);
 
 #define eps 0.0000001
 
-struct Point {
+struct Vector {
 	double x = NAN;
 	double y = NAN;
 	double z = NAN;
 
+	Vector(double x_, double y_, double z_) : x(x_), y(y_), z(z_) {}
+
+	friend Vector& operator+(Vector& first, Vector& second);
+	friend Vector& operator-(Vector& first, Vector& second);
+	friend double scalar_mult(Vector& first, Vector& second);
+	friend Vector& vector_mult(Vector& first, Vector& second);
+
+	double lenght() {
+		return std::sqrt(x * x + y * y + z * z);
+	}
+}
+
+Vector& Vector::operator+(Vector& first, Vector& second) {
+	return Vector(first.x + second.x, first.y + second.y, first.z + second.z);
+}
+Vector& Vector::operator-(Vector& first, Vector& second) {
+	return Vector(first.x - second.x, first.y - second.y, first.z - second.z);
+}
+double Vector::scalar_mult(Vector& first, Vector& second) {
+	return (first.x * second.x + first.y * second.y + first.z * second.z);
+}
+Vector& Vector::vector_mult(Vector& first, Vector& second) {
+	return Vector(first.y * second.z - first.z * second.y,
+				  first.z * second.x - first.x * second.z,
+				  first.x * second.y - first.y * second.x);
+}
+///    scalar mult for points??
+struct Point : Vector {
+
 	Point() {}
-	Point(double x_, double y_, double z_) : x(x_), y(y_), z(z_) {} // i hope it true;
+	Point(double x_, double y_, double z_) : Vector(x_, y_, z_) {} // i hope it true;
 
 	//void print();
 	bool is_valid();
@@ -38,8 +68,6 @@ struct Triangle {
 
 	Component x_proj;
 
-	bool intersection = false;
-
 	void get_x_projection(); // Potential is rudyment
 	
 };
@@ -47,61 +75,56 @@ struct Triangle {
 
 
 struct Surface {
-	double A_surf;
-	double B_surf;
-	double C_surf;
-	double D_surf;
+	Vector surf;
+	double D;
 
 	Surface(Triangle& trian) { // ?
 		// first - A, second - B, third - C
-		A_surf = trian.A.y * (trian.B.z - trian.C.z) + trian.B.y * (trian.C.z - trian.A.z) + trian.C.y * (trian.A.z - trian.B.z);
-		B_surf = trian.A.x * (trian.C.z - trian.B.z) + trian.B.x * (trian.A.z - trian.C.z) + trian.C.x * (trian.B.z - trian.A.z);
-		C_surf = trian.A.x * (trian.B.y - trian.C.y) + trian.B.x * (trian.C.y - trian.A.y) + trian.C.x * (trian.A.y - trian.B.y);
+		surf.x = trian.A.y * (trian.B.z - trian.C.z) + trian.B.y * (trian.C.z - trian.A.z) + trian.C.y * (trian.A.z - trian.B.z);
+		surf.y = trian.A.x * (trian.C.z - trian.B.z) + trian.B.x * (trian.A.z - trian.C.z) + trian.C.x * (trian.B.z - trian.A.z);
+		surf.z = trian.A.x * (trian.B.y - trian.C.y) + trian.B.x * (trian.C.y - trian.A.y) + trian.C.x * (trian.A.y - trian.B.y);
 
-		D_surf = - A_surf * trian.A.x - B_surf * trian.A.y - C_surf * trian.A.z; 
+		D = - surf.x * trian.A.x - surf.y * trian.A.y - surf.z * trian.A.z; 
 
-		double normalize = 1 / sqrt(A_surf * A_surf + B_surf * B_surf + C_surf * C_surf);
+		double normalize = 1 / surf.lenght();
 
-		A_surf *= normalize;
-		B_surf *= normalize;
-		C_surf *= normalize;
-		D_surf *= normalize;
+		surf.x *= normalize;
+		surf.y *= normalize;
+		surf.z *= normalize;
+		D      *= normalize;
 	}
 };
 
 struct Line {
-	Point starting;
-
-	double x_proj;
-	double y_proj;
-	double z_proj;
+	Point   refer; //reference
+	Vector direct; //directional
 
 	Line(Surface& one, Surface& two) {
 	//guide or direct
-		x_proj = one.B_surf * two.C_surf - one.C_surf * two.B_surf;
-		y_proj = one.C_surf * two.A_surf - one.A_surf * two.C_surf;
-		z_proj = one.A_surf * two.B_surf - one.B_surf * two.A_surf;
+		direct.x = one.surf.y * two.surf.z - one.surf.z * two.surf.y;
+		direct.y = one.surf.z * two.surf.x - one.surf.x * two.surf.z;
+		direct.z = one.surf.x * two.surf.y - one.surf.y * two.surf.x;
 //s is D
-		double scalar_n_n = one.A_surf * two.A_surf + one.B_surf * two.B_surf + one.C_surf * two.C_surf;
-		double lenght_1 = sqrt(one.A_surf * one.A_surf + one.B_surf * one.B_surf + one.C_surf * one.C_surf);
-		double lenght_2 = sqrt(two.A_surf * two.A_surf + two.B_surf * two.B_surf + two.C_surf * two.C_surf);
+		double scalar_n_n = scalar_mult(one.surf, two.surf);
+		double lenght_1 = one.surf.lenght();
+		double lenght_2 = two.surf.lenght();
 // SIGN OF D??
 		double a = (two.D_surf * scalar_n_n - one.D_surf * lenght_2 * lenght_2) / (scalar_n_n * scalar_n_n - lenght_2 * lenght_2 * lenght_1 * lenght_1);
 		double b = (one.D_surf * scalar_n_n - two.D_surf * lenght_1 * lenght_1) / (scalar_n_n * scalar_n_n - lenght_2 * lenght_2 * lenght_1 * lenght_1);
 	
-		starting.x = a * one.A_surf + b * two.A_surf;
-		starting.y = a * one.B_surf + b * two.B_surf;
-		starting.z = a * one.C_surf + b * two.C_surf;
+		refer.x = a * one.surf.x + b * two.surf.x;
+		refer.y = a * one.surf.y + b * two.surf.y;
+		refer.z = a * one.surf.z + b * two.surf.z;
 	}
 
 	Line(Point& one, Point& two) {
-		starting.x = one.x;
-		starting.y = one.y;
-		starting.z = one.z;
+		refer.x = one.x;
+		refer.y = one.y;
+		refer.z = one.z;
 
-		x_proj = two.x - one.x;
-		y_proj = two.y - one.y;
-		z_proj = two.z - one.z;
+		direct.x = two.x - one.x;
+		direct.y = two.y - one.y;
+		direct.z = two.z - one.z;
 	}
 };
 
@@ -113,9 +136,9 @@ struct SignDist {
 	double dist_V_2;
 
 	SignDist (Surface& surf, Triangle& trian) { // Very big QUESTION!! // Doing more smart
-		dist_V_0 = trian.A.x * surf.A_surf + trian.A.y * surf.B_surf + trian.A.z * surf.C_surf + surf.D_surf;
-		dist_V_1 = trian.B.x * surf.A_surf + trian.B.y * surf.B_surf + trian.B.z * surf.C_surf + surf.D_surf;
-		dist_V_2 = trian.C.x * surf.A_surf + trian.C.y * surf.B_surf + trian.C.z * surf.C_surf + surf.D_surf;
+		dist_V_0 = trian.A.x * surf.surf.x + trian.A.y * surf.surf.y + trian.A.z * surf.surf.z + surf.D;
+		dist_V_1 = trian.B.x * surf.surf.x + trian.B.y * surf.surf.y + trian.B.z * surf.surf.z + surf.D;
+		dist_V_2 = trian.C.x * surf.surf.x + trian.C.y * surf.surf.y + trian.C.z * surf.surf.z + surf.D;
 	}
 };
 
@@ -153,9 +176,9 @@ struct Projection {
 			//std::swap(const_cast<double&>(std::min(sign.dist_V_0, sign.dist_V_1)), sign.dist_V_2); // ??????????????????????????????????????????????
 		}
 
-		double scalar_0 = main.x_proj * (trian.A.x - main.starting.x) + main.y_proj * (trian.A.y - main.starting.y) + main.z_proj * (trian.A.z - main.starting.z);
-		double scalar_1 = main.x_proj * (trian.B.x - main.starting.x) + main.y_proj * (trian.B.y - main.starting.y) + main.z_proj * (trian.B.z - main.starting.z);
-		double scalar_2 = main.x_proj * (trian.C.x - main.starting.x) + main.y_proj * (trian.C.y - main.starting.y) + main.z_proj * (trian.C.z - main.starting.z);
+		double scalar_0 = scalar_mult(main.direct, trian.A - main.refer);
+		double scalar_1 = scalar_mult(main.direct, trian.B - main.refer);
+		double scalar_2 = scalar_mult(main.direct, trian.C - main.refer);
 
 		left = scalar_0 + (scalar_2 - scalar_0) * sign.dist_V_0 / (sign.dist_V_0 - sign.dist_V_2);
 		right = scalar_1 + (scalar_2 - scalar_1) * sign.dist_V_1 / (sign.dist_V_1 - sign.dist_V_2);

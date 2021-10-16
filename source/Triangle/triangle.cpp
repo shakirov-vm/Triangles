@@ -9,11 +9,11 @@
 #include "../Triangle/triangle.h"
 
 // maybe ref?
-Point operator+(Point& first, Point& second) {
-    return Point(first.x + second.x, first.y + second.y, first.z + second.z);
+Point& operator+(Point& first, Point& second) {
+    return Point(first.point.x + second.point.x, first.point.y + second.point.y, first.point.z + second.point.z);
 }
-Point operator-(Point& first, Point& second) {
-    return Point(first.x - second.x, first.y - second.y, first.z - second.z);
+Point& operator-(Point& first, Point& second) {
+    return Point(first.point.x - second.point.x, first.point.y - second.point.y, first.point.z - second.point.z);
 }
 
 bool equal_double(double zero, double first) {
