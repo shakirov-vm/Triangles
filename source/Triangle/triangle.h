@@ -76,51 +76,22 @@ struct Line {
 	double y_proj;
 	double z_proj;
 
-	//tau is always 1
-
-	Line(Surface& one, Surface& two) { // It's can be bad
-		
-		if (!equal_double(one.A_surf, 0) && !equal_double(two.A_surf * one.B_surf - one.A_surf * two.B_surf, 0)) {
-			starting.x = (one.B_surf * two.D_surf - two.B_surf * one.D_surf) / (two.A_surf * one.B_surf - one.A_surf * two.B_surf);
-			starting.y = (two.A_surf * one.D_surf - one.A_surf * two.D_surf) / (two.A_surf * one.B_surf - one.A_surf * two.B_surf);
-			starting.z = 0;
-			
-		} else if (!equal_double(one.A_surf, 0) && equal_double(two.A_surf * one.B_surf - one.A_surf * two.B_surf, 0) &&
-													!equal_double(two.A_surf * one.C_surf - one.A_surf * two.C_surf, 0)) {
-			starting.x = (one.C_surf * two.D_surf - two.C_surf * one.D_surf) / (two.A_surf * one.C_surf - one.A_surf * two.C_surf);
-			starting.y = 0;
-			starting.z = (two.A_surf * one.D_surf - one.A_surf * two.D_surf) / (two.A_surf * one.C_surf - one.A_surf * two.C_surf);
-
-		} else if (equal_double(one.A_surf, 0) && !equal_double(two.A_surf, 0) && !equal_double(one.B_surf, 0)) {
-			starting.x = (one.B_surf * two.D_surf - two.B_surf * one.D_surf) / (two.A_surf * one.B_surf);
-			starting.y = one.D_surf / one.B_surf;
-			starting.z = 0;
-
-		} else if (equal_double(one.A_surf, 0) && !equal_double(two.A_surf, 0) && equal_double(one.B_surf, 0) && !equal_double(one.C_surf, 0)) {
-			starting.x = (one.C_surf * two.D_surf - two.C_surf * one.D_surf) / (two.A_surf * one.C_surf);
-			starting.y = 0;
-			starting.z = one.D_surf / one.C_surf;
-
-		} else if (equal_double(one.A_surf, 0) && equal_double(two.A_surf, 0) && !equal_double(one.B_surf, 0) && 
-													!equal_double(two.B_surf * one.C_surf - one.B_surf * two.C_surf, 0)) {
-			starting.x = 0;
-			starting.y = (one.C_surf * two.D_surf - two.C_surf * one.D_surf) / (two.B_surf * one.C_surf - one.B_surf * two.C_surf);
-			starting.z = (two.B_surf * one.D_surf - one.B_surf * two.D_surf) / (two.B_surf * one.C_surf - one.B_surf * two.C_surf);
-
-		} else if (equal_double(one.A_surf, 0) && equal_double(two.A_surf, 0) && equal_double(one.B_surf, 0) && !equal_double(two.B_surf, 0) &&
-													!equal_double(one.C_surf, 0)) {
-			starting.x = 0;
-			starting.y = (one.C_surf * two.D_surf - two.C_surf * one.D_surf) / (two.B_surf * one.C_surf);
-			starting.z = one.D_surf / two.B_surf;
-		
-		} else {
-			printf("That can't be!\n");
-			exit(666);
-		}
-
-		x_proj = one.B_surf * two.C_surf - two.B_surf * one.C_surf;
+	Line(Surface& one, Surface& two) {
+	//guide or direct
+		x_proj = one.B_surf * two.C_surf - one.C_surf * two.B_surf;
 		y_proj = one.C_surf * two.A_surf - one.A_surf * two.C_surf;
-		z_proj = one.A_surf * two.B_surf - two.A_surf * one.B_surf; 
+		z_proj = one.A_surf * two.B_surf - one.B_surf * two.A_surf;
+//s is D
+		double scalar_n_n = one.A_surf * two.A_surf + one.B_surf * two.B_surf + one.C_surf * two.C_surf;
+		double lenght_1 = sqrt(one.A_surf * one.A_surf + one.B_surf * one.B_surf + one.C_surf * one.C_surf);
+		double lenght_2 = sqrt(two.A_surf * two.A_surf + two.B_surf * two.B_surf + two.C_surf * two.C_surf);
+// SIGN OF D??
+		double a = (two.D_surf * scalar_n_n - one.D_surf * lenght_2 * lenght_2) / (scalar_n_n * scalar_n_n - lenght_2 * lenght_2 * lenght_1 * lenght_1);
+		double b = (one.D_surf * scalar_n_n - two.D_surf * lenght_1 * lenght_1) / (scalar_n_n * scalar_n_n - lenght_2 * lenght_2 * lenght_1 * lenght_1);
+	
+		starting.x = a * one.A_surf + b * two.A_surf;
+		starting.y = a * one.B_surf + b * two.B_surf;
+		starting.z = a * one.C_surf + b * two.C_surf;
 	}
 
 	Line(Point& one, Point& two) {

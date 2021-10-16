@@ -5,9 +5,11 @@
 
 #include "../Triangle/triangle.h"
 #include "../Compare/compare.h"
+#include "sort.h"
 
 
 bool compare_proj(Triangle& first, Triangle& second); // ???
+void compare_triangles (Triangle& zero, Triangle& first);
 
 void sort_triangles(std::vector<Triangle>& triangles) {
 	using VectIt = std::vector<Triangle>::iterator;
@@ -26,7 +28,7 @@ void sort_triangles(std::vector<Triangle>& triangles) {
 	for (VectIt left = triangles.begin(); left != std::prev(triangles.end()); left++) {
 		for (VectIt right = std::next(left); right != triangles.end(); right++) {
 			if (left->x_proj.right > right->x_proj.left) { // we can overload operator > for double?
-				//compare_triangles(*left, *right);
+				compare_triangles (*left, *right);
 				std::cout << left->id << " - " << right->id << "\n";
 				continue;
 			}

@@ -41,6 +41,12 @@ bool UnitTest(std::string& input) {
 
 		sort_triangles(triangles);
 
+		printf("Comparised triangles: \n");
+		for (size_t i = 0; i < quantity / 9; i++) {
+			if (triangles[i].intersect) std::cout << triangles[i].id << " ";
+		}
+		printf("\n");
+
         input_potok.close();
         return false;
     }
