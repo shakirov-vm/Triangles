@@ -62,3 +62,15 @@ bool intersect(Projection& first, Projection& second) {
 
     return true;
 }
+
+bool LE_double(double first, double second) {
+    if (std::abs(first - second) < eps) return true;
+    if (first < second) return true;
+    return false;
+}
+
+bool BE_double(double first, double second) {
+    if (std::abs(first - second) < eps) return true;
+    if (first > second) return true;
+    return false;
+}

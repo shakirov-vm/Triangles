@@ -4,8 +4,10 @@
 #include <algorithm>
 
 bool equal_double(double first, double second);
+bool LE_double(double first, double second);
+bool BE_double(double first, double second);
 
-#define eps 0.0000001
+#define eps 0.00001
 
 struct Vector {
 	double x = NAN;
@@ -187,7 +189,9 @@ struct Projection {
 
 			//std::swap(const_cast<double&>(std::min(sign.dist_V_0, sign.dist_V_1)), sign.dist_V_2); // ??????????????????????????????????????????????
 		}
-		printf("Signed distanses : 0: %lf, 1: %lf, 2: %lf\n", sign.dist_V_0, sign.dist_V_1, sign.dist_V_2);
+		//printf("Signed distanses : 0: %lf, 1: %lf, 2: %lf\n", sign.dist_V_0, sign.dist_V_1, sign.dist_V_2);
+
+		/*!!!*/if (sign.dist_V_0 == 0 && sign.dist_V_1 == 0) {/*!!!*/} 
 
 		double scalar_0 = scalar_mult(main.direct, trian.A - main.refer);
 		double scalar_1 = scalar_mult(main.direct, trian.B - main.refer);
@@ -202,7 +206,7 @@ struct Projection {
 		if (left > right)
 			std::swap(left, right);
 
-		printf("Projection: (%lf, %lf)\n", left, right);
+		//printf("Projection: (%lf, %lf)\n", left, right);
 	}
 
 	friend bool intersect(Projection& first, Projection& second);
