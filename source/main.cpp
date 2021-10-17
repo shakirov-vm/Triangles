@@ -34,15 +34,16 @@ bool UnitTest(std::string& input) {
 
         size_t quantity;
         input_potok >> quantity;
+        quantity /= 9;
 
-		std::vector<Triangle> triangles(quantity / 9); // ???
+		std::vector<Triangle> triangles(quantity); // ???
 
 		take_triangles(triangles, input);
 
 		sort_triangles(triangles);
 
-		printf("Comparised triangles: \n");
-		for (size_t i = 0; i < quantity / 9; i++) {
+		printf("All intersecting triangles:\n");
+		for (size_t i = 0; i < quantity; i++) {
 			if (triangles[i].intersect) std::cout << triangles[i].id << " ";
 		}
 		printf("\n");

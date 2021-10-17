@@ -12,18 +12,29 @@ struct Vector {
 	double y = NAN;
 	double z = NAN;
 
+	Vector () {}
 	Vector(double x_, double y_, double z_) : x(x_), y(y_), z(z_) {}
 
-	friend Vector& operator+(Vector& first, Vector& second);
-	friend Vector& operator-(Vector& first, Vector& second);
-	friend double scalar_mult(Vector& first, Vector& second);
-	friend Vector& vector_mult(Vector& first, Vector& second);
+	friend Vector operator+(Vector const &first, Vector const &second)	{
+		return Vector(first.x + second.x, first.y + second.y, first.z + second.z);
+	}
+	friend Vector operator-(Vector const &first, Vector const &second) {
+		return Vector(first.x - second.x, first.y - second.y, first.z - second.z);
+	}
+	friend double scalar_mult(Vector const &first, Vector const &second) {
+		return (first.x * second.x + first.y * second.y + first.z * second.z);
+	}
+	friend Vector vector_mult(Vector const &first, Vector const &second) {
+		return Vector(first.y * second.z - first.z * second.y,
+					  first.z * second.x - first.x * second.z,
+					  first.x * second.y - first.y * second.x);
+	}
 
 	double lenght() {
 		return std::sqrt(x * x + y * y + z * z);
 	}
-}
-
+};
+/*
 Vector& Vector::operator+(Vector& first, Vector& second) {
 	return Vector(first.x + second.x, first.y + second.y, first.z + second.z);
 }
@@ -38,6 +49,7 @@ Vector& Vector::vector_mult(Vector& first, Vector& second) {
 				  first.z * second.x - first.x * second.z,
 				  first.x * second.y - first.y * second.x);
 }
+*/
 ///    scalar mult for points??
 struct Point : Vector {
 
@@ -47,8 +59,8 @@ struct Point : Vector {
 	//void print();
 	bool is_valid();
 
-	friend Point operator+(Point& first, Point& second);
-	friend Point operator-(Point& first, Point& second);
+	friend Point operator+(Point const &first, Point const &second);
+	friend Point operator-(Point const &first, Point const &second);
 	
 };    
 
@@ -109,8 +121,8 @@ struct Line {
 		double lenght_1 = one.surf.lenght();
 		double lenght_2 = two.surf.lenght();
 // SIGN OF D??
-		double a = (two.D_surf * scalar_n_n - one.D_surf * lenght_2 * lenght_2) / (scalar_n_n * scalar_n_n - lenght_2 * lenght_2 * lenght_1 * lenght_1);
-		double b = (one.D_surf * scalar_n_n - two.D_surf * lenght_1 * lenght_1) / (scalar_n_n * scalar_n_n - lenght_2 * lenght_2 * lenght_1 * lenght_1);
+		double a = (two.D * scalar_n_n - one.D * lenght_2 * lenght_2) / (scalar_n_n * scalar_n_n - lenght_2 * lenght_2 * lenght_1 * lenght_1);
+		double b = (one.D * scalar_n_n - two.D * lenght_1 * lenght_1) / (scalar_n_n * scalar_n_n - lenght_2 * lenght_2 * lenght_1 * lenght_1);
 	
 		refer.x = a * one.surf.x + b * two.surf.x;
 		refer.y = a * one.surf.y + b * two.surf.y;
@@ -175,15 +187,22 @@ struct Projection {
 
 			//std::swap(const_cast<double&>(std::min(sign.dist_V_0, sign.dist_V_1)), sign.dist_V_2); // ??????????????????????????????????????????????
 		}
+		printf("Signed distanses : 0: %lf, 1: %lf, 2: %lf\n", sign.dist_V_0, sign.dist_V_1, sign.dist_V_2);
 
 		double scalar_0 = scalar_mult(main.direct, trian.A - main.refer);
 		double scalar_1 = scalar_mult(main.direct, trian.B - main.refer);
 		double scalar_2 = scalar_mult(main.direct, trian.C - main.refer);
 
+		//printf("Signed 0: [%lf, %lf]\n", sign.dist_V_0, sign.dist_V_2);
+		//printf("Signed 1: [%lf, %lf]\n", sign.dist_V_1, sign.dist_V_2);
+
 		left = scalar_0 + (scalar_2 - scalar_0) * sign.dist_V_0 / (sign.dist_V_0 - sign.dist_V_2);
 		right = scalar_1 + (scalar_2 - scalar_1) * sign.dist_V_1 / (sign.dist_V_1 - sign.dist_V_2);
 
-		if (left > right) std::swap(left, right);
+		if (left > right)
+			std::swap(left, right);
+
+		printf("Projection: (%lf, %lf)\n", left, right);
 	}
 
 	friend bool intersect(Projection& first, Projection& second);

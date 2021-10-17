@@ -9,11 +9,11 @@
 #include "../Triangle/triangle.h"
 
 // maybe ref?
-Point& operator+(Point& first, Point& second) {
-    return Point(first.point.x + second.point.x, first.point.y + second.point.y, first.point.z + second.point.z);
+Point operator+(Point const &first, Point const &second) {
+    return Point(first.x + second.x, first.y + second.y, first.z + second.z);
 }
-Point& operator-(Point& first, Point& second) {
-    return Point(first.point.x - second.point.x, first.point.y - second.point.y, first.point.z - second.point.z);
+Point operator-(Point const &first, Point const &second) {
+    return Point(first.x - second.x, first.y - second.y, first.z - second.z);
 }
 
 bool equal_double(double zero, double first) {
@@ -39,7 +39,7 @@ void take_triangles(std::vector<Triangle>& triangles, std::string input_file) {
             input_potok >> triangles[i].A.x >> triangles[i].A.y >> triangles[i].A.z;
             input_potok >> triangles[i].B.x >> triangles[i].B.y >> triangles[i].B.z;
             input_potok >> triangles[i].C.x >> triangles[i].C.y >> triangles[i].C.z;
-            triangles[i].id = i;
+            triangles[i].id = i + 1;
             triangles[i].get_x_projection();
         }
 
@@ -56,7 +56,9 @@ void Triangle::get_x_projection() {
 }
 
 bool intersect(Projection& first, Projection& second) {
-    if (first.left > second.right || second.left > first.right) return true;
+    //if (first.left > second.right || second.left > first.right) return true;
+    if (first.right < second.left) return false;
+    if (second.right < first.left) return false;
 
-    return false;
+    return true;
 }
