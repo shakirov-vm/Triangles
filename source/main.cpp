@@ -7,6 +7,7 @@
 
 #include "Sort/sort.h"
 #include "Triangle/triangle.h"
+#include "Triangle/double_tools.h"
 
 bool UnitTest(std::string& input);
 
@@ -25,6 +26,9 @@ int main(int argc, char** argv) {
 	return 2;
 }
 
+bool compare_id(Triangle& first, Triangle& second) {
+	return (first.id < second.id); // ??
+}
 
 bool UnitTest(std::string& input) { 
         
@@ -42,7 +46,8 @@ bool UnitTest(std::string& input) {
 
 		sort_triangles(triangles);
 
-		printf("All intersecting triangles:\n");
+		std::sort(triangles.begin(), triangles.end(), compare_id);
+		printf("\nAll intersecting triangles:\n");
 		for (size_t i = 0; i < quantity; i++) {
 			if (triangles[i].intersect) std::cout << triangles[i].id << " ";
 		}
