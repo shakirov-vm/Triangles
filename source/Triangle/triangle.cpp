@@ -89,8 +89,8 @@ SignDist::SignDist (Surface& surf, Triangle& trian) {
 }
 //Projection
 Projection::Projection(Line& main, Triangle& trian, SignDist& sign) {
-    //C is reverse_side !! and we need recalculate signed distance!!
-    if ((sign.dist_V_0 * sign.dist_V_1) < 0) { // CHECK THIS INE  MORE TIME!!
+
+    if ((sign.dist_V_0 * sign.dist_V_1) < 0) {
         if (sign.dist_V_2 < 0) {
             if (sign.dist_V_0 > 0) {
                 std::swap(sign.dist_V_0, sign.dist_V_2);
@@ -111,11 +111,7 @@ Projection::Projection(Line& main, Triangle& trian, SignDist& sign) {
                 std::swap(trian.B, trian.C);
             }
         }
-
-        //std::swap(const_cast<double&>(std::min(sign.dist_V_0, sign.dist_V_1)), sign.dist_V_2); // ??????????????????????????????????????????????
-    }
-
-    /*!!!*/if (sign.dist_V_0 == 0 && sign.dist_V_1 == 0) {/*!!!*/} 
+     }
 
     double scalar_0 = scalar_mult(main.direct, trian.A - main.refer);
     double scalar_1 = scalar_mult(main.direct, trian.B - main.refer);
@@ -128,7 +124,6 @@ Projection::Projection(Line& main, Triangle& trian, SignDist& sign) {
         std::swap(left, right);
 }
 bool intersect(Projection& first, Projection& second) {
-    //if (first.left > second.right || second.left > first.right) return true;
     if (first.right < second.left) return false;
     if (second.right < first.left) return false;
 
@@ -147,8 +142,8 @@ void take_triangles(std::vector<Triangle>& triangles, std::string input_file) {
 
         quantity /= 9; // I hope it divide
 
-        printf("vector size - ");
-            std::cout << triangles.size() << "\n";
+        if (DEBUG) printf("vector size - ");
+        if (DEBUG) std::cout << triangles.size() << "\n";
 
         for (size_t i = 0; i < quantity; i++) {
             

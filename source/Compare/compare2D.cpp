@@ -1,9 +1,9 @@
 
 #include "../Triangle/triangle.h"
 #include "compare2D.h"
-// It so slow
-void handle2D (Triangle& first, Triangle& second, Surface& surf) { //Need better handle
-// more accuratly!
+
+void handle2D (Triangle& first, Triangle& second, Surface& surf) { 
+
 	if (equal_double(surf.surf.z, 0)) {
 		if (equal_double(surf.surf.y, 0)) {
 			Point2D first_A(first.A.z, first.A.y);
@@ -18,7 +18,7 @@ void handle2D (Triangle& first, Triangle& second, Surface& surf) { //Need better
 			Triangle2D new_second(second_A, second_B, second_C);
 
 			if (Compare2D(new_first, new_second)) {
-				printf("2D Triangles intersect: (%d; %d)\n", first.id, second.id);
+				if (DEBUG) printf("2D Triangles intersect: (%ld; %ld)\n", first.id, second.id);
 				first.intersect = true;
 				second.intersect = true;
 			}
@@ -37,7 +37,7 @@ void handle2D (Triangle& first, Triangle& second, Surface& surf) { //Need better
 			Triangle2D new_second(second_A, second_B, second_C);
 
 			if (Compare2D(new_first, new_second)) {
-				printf("2D Triangles intersect: (%d; %d)\n", first.id, second.id);
+				if (DEBUG) printf("2D Triangles intersect: (%ld; %ld)\n", first.id, second.id);
 				first.intersect = true;
 				second.intersect = true;
 			}
@@ -58,7 +58,7 @@ void handle2D (Triangle& first, Triangle& second, Surface& surf) { //Need better
 		Triangle2D new_second(second_A, second_B, second_C);
 
 		if (Compare2D(new_first, new_second)) {
-			printf("2D Triangles intersect: (%d; %d)\n", first.id, second.id);
+			if (DEBUG) printf("2D Triangles intersect: (%ld; %ld)\n", first.id, second.id);
 			first.intersect = true;
 			second.intersect = true;
 		}
@@ -136,7 +136,7 @@ double count_sign_dist(Point2D& point, Line2D& line) {
 bool check_segments(double first_left, double first_right, double second_left, double second_right, Segment2D& first, Segment2D& second) {
 	if (equal_double(first_left, 0) && equal_double(first_right, 0) && equal_double(second_left, 0) && equal_double(second_right, 0)) {
 
-		if (!equal_double(first.start.x, first.end.x)) { // Is it enough? // You can short it
+		if (!equal_double(first.start.x, first.end.x)) { // You can short it
 			first_left = first.start.x;
 			first_right = first.end.x;
 

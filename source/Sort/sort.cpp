@@ -25,6 +25,6 @@ void sort_triangles(std::vector<Triangle>& triangles) {
 }
 
 bool compare_proj(Triangle& first, Triangle& second) {
-	return LE_double(first.x_proj.left, second.x_proj.left); // ??
+	return LE_double(first.x_proj.left, second.x_proj.left); 
 }
 

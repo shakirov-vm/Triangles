@@ -5,6 +5,8 @@
 
 #include "double_tools.h"
 
+#define DEBUG 0
+
 struct Vector {
 	double x = NAN;
 	double y = NAN;
@@ -24,7 +26,7 @@ struct Vector {
 
 	double lenght();
 };
-///    scalar mult for points??
+
 struct Point : Vector {
 	Point() {}
 	Point(double x_, double y_, double z_) : Vector(x_, y_, z_) {}
@@ -50,7 +52,7 @@ struct Triangle {
 
 	Component x_proj;
 
-	void get_x_projection(); // Potential is rudyment
+	void get_x_projection(); 
 };
 
 struct Surface {
