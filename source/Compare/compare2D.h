@@ -70,8 +70,9 @@ struct SignDist2DTriangle { //From points to 3 segment
 };
 // The name of triangle is to what triangle distances
 
-bool check_intersect_triangle(SignDist2DTriangle& first_from, SignDist2DTriangle& second_from);
+bool check_intersect_triangle(SignDist2DTriangle& first_from, SignDist2DTriangle& second_from, Segment2DTriangle& seg_first, Segment2DTriangle& seg_second);
 bool check_internal(SignDist2DTriangle& tr);
+bool check_segments(double first_left, double first_right, double second_left, double second_right, Segment2D& first, Segment2D& second);
 void handle2D (Triangle& first, Triangle& second, Surface& surf);
 bool Compare2D (Triangle2D& first, Triangle2D& second);
 double count_sign_dist(Point2D& point, Line2D& line);
