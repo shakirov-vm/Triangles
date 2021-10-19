@@ -12,6 +12,10 @@ struct Vector {
 
 	Vector () {}
 	Vector(double x_, double y_, double z_) : x(x_), y(y_), z(z_) {}
+	bool is_null() {
+		if (equal_double(x, 0) && equal_double(y, 0) && equal_double(z, 0)) return true;
+		return false;
+	}
 
 	friend Vector operator+(Vector const &first, Vector const &second);
 	friend Vector operator-(Vector const &first, Vector const &second);

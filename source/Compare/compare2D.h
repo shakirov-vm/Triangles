@@ -40,18 +40,38 @@ struct Segment2D {
 };
 
 struct SignDist2D {
-	double sec_start_to_first;
-	double sec_end_to_first;
-	double fir_start_to_second;
-	double fir_end_to_second;
+	double SD_A;
+	double SD_B;
+	double SD_C;
 
-	SignDist2D(Point2D& point, Line2D& line);
-	SignDist2D(Segment2D& first, Segment2D& second);
+	SignDist2D(Triangle2D& trian, Segment2D& seg);
 
 	bool check_intersect();
 };
 
-bool check_internal(double a, double b, double c, double e, double f, double g, double h, double i, double j);
-void handle2D (Triangle& first, Triangle& second);
-bool Compare2D (Triangle2D& first, Triangle2D second);
+struct Segment2DTriangle {
+	Segment2D seg_A;
+	Segment2D seg_B;
+	Segment2D seg_C;
+
+	Segment2DTriangle(Triangle2D& trian) : seg_A(trian.A, trian.B), seg_B(trian.B, trian.C), seg_C(trian.C, trian.A) {
+		seg_A.set_normal(trian.C);
+		seg_B.set_normal(trian.A);
+		seg_C.set_normal(trian.B);
+	}
+};
+
+struct SignDist2DTriangle { //From points to 3 segment
+	SignDist2D to_A;
+	SignDist2D to_B;
+	SignDist2D to_C;
+
+	SignDist2DTriangle(Triangle2D& to, Segment2D& first, Segment2D& second, Segment2D& third) : to_A(to, first), to_B(to, second), to_C(to, third) {}
+};
+// The name of triangle is to what triangle distances
+
+bool check_intersect_triangle(SignDist2DTriangle& first_from, SignDist2DTriangle& second_from);
+bool check_internal(SignDist2DTriangle& tr);
+void handle2D (Triangle& first, Triangle& second, Surface& surf);
+bool Compare2D (Triangle2D& first, Triangle2D& second);
 double count_sign_dist(Point2D& point, Line2D& line);
