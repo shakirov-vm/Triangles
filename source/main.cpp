@@ -50,6 +50,7 @@ bool YourTest(std::string& input) {
 
         size_t quantity;
         input_potok >> quantity;
+        
         quantity /= 9;
 
 		std::vector<Triangle> triangles(quantity); 
@@ -101,13 +102,23 @@ bool E2ETest(std::string& input, std::string& answer) {
 			if (triangles[i].intersect) input_res.push_back(triangles[i].id);
 		}
 
-		size_t tmp;
-		for (size_t i = 0; !answer_potok.eof(); i++) {
-			answer_potok >> tmp;
-			answer_res.push_back(tmp);
+		size_t tmp = 0;
+
+		if (answer_potok.tellg() != 0) {
+
+			while(!answer_potok.eof()) {
+				answer_potok >> tmp;
+				if (tmp == 0) answer_res.push_back(tmp);	
+			}
 		}
 
 		size_t error = 0;
+
+		if (answer_res.size() == 0 && input_res.size() == 0) {
+        	input_potok.close();
+        	answer_potok.close();
+			return true;
+		}
 
 		for (size_t i = 0; i != answer_res.size(); i++) {
 			if (input_res[i] != answer_res[i]) error++; 
