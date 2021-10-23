@@ -51,7 +51,7 @@ bool YourTest(std::string& input) {
         size_t quantity;
         input_potok >> quantity;
         
-        quantity /= 9;
+        //quantity /= 9;
 
 		std::vector<Triangle> triangles(quantity); 
 
@@ -85,7 +85,7 @@ bool E2ETest(std::string& input, std::string& answer) {
 
         size_t quantity;
         input_potok >> quantity;
-        quantity /= 9;
+        //quantity /= 9;
 
 		std::vector<Triangle> triangles(quantity); 
 

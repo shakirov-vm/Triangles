@@ -140,7 +140,7 @@ void take_triangles(std::vector<Triangle>& triangles, std::string input_file) {
         size_t quantity;
         input_potok >> quantity;
 
-        quantity /= 9; // I hope it divide
+        //quantity /= 9; // I hope it divide
 
         if (DEBUG) printf("vector size - ");
         if (DEBUG) std::cout << triangles.size() << "\n";
