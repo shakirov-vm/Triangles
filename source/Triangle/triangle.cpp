@@ -8,7 +8,7 @@
 //There don't need Class::func!
 
 //Vector
-Vector operator+(Vector const &first, Vector const &second)  {
+Vector operator+(Vector const &first, Vector const &second) {
     return Vector(first.x + second.x, first.y + second.y, first.z + second.z);
 }
 Vector operator-(Vector const &first, Vector const &second) {
@@ -22,7 +22,7 @@ Vector vector_mult(Vector const &first, Vector const &second) {
                   first.z * second.x - first.x * second.z,
                   first.x * second.y - first.y * second.x);
 }
-double Vector::lenght() {
+double Vector::lenght() const {
     return std::sqrt(x * x + y * y + z * z);
 }
 //Point
@@ -34,8 +34,8 @@ Point operator-(Point const &first, Point const &second) {
 }
 //Triangle
 void Triangle::get_x_projection() {
-    x_proj.left = std::min(std::min(A.x, B.x), C.x); //fmin??
-    x_proj.right = std::max(std::max(A.x, B.x), C.x); //fmax??
+    x_proj.left = std::min(std::min(A.x, B.x), C.x); 
+    x_proj.right = std::max(std::max(A.x, B.x), C.x); 
 }
 //Surface
 Surface::Surface(Triangle& trian) { 
@@ -130,35 +130,20 @@ bool intersect(Projection& first, Projection& second) {
     return true;
 }
 ////////////////////////////////////////////////////////////////////////////////////////
-                                                      // ??
-void take_triangles(std::vector<Triangle>& triangles, std::string input_file) {
+                                                      
+void take_triangles(std::vector<Triangle>& triangles, std::istream& input_potok, size_t quantity) {
 
-    std::ifstream input_potok(input_file);
+    if (DEBUG) printf("vector size - ");
+    if (DEBUG) std::cout << triangles.size() << "\n";
 
-    if (input_potok.is_open()) {
-
-        size_t quantity;
-        input_potok >> quantity;
-
-        //quantity /= 9; // I hope it divide
-
-        if (DEBUG) printf("vector size - ");
-        if (DEBUG) std::cout << triangles.size() << "\n";
-
-        for (size_t i = 0; i < quantity; i++) {
-            
-            input_potok >> triangles[i].A.x >> triangles[i].A.y >> triangles[i].A.z;
-            input_potok >> triangles[i].B.x >> triangles[i].B.y >> triangles[i].B.z;
-            input_potok >> triangles[i].C.x >> triangles[i].C.y >> triangles[i].C.z;
-            triangles[i].id = i + 1;
-            triangles[i].get_x_projection();
-        }
-
-        input_potok.close();
-        return;
+    for (size_t i = 0; i < quantity; i++) {
+        
+        input_potok >> triangles[i].A.x >> triangles[i].A.y >> triangles[i].A.z;
+        input_potok >> triangles[i].B.x >> triangles[i].B.y >> triangles[i].B.z;
+        input_potok >> triangles[i].C.x >> triangles[i].C.y >> triangles[i].C.z;
+        triangles[i].id = i + 1;
+        triangles[i].get_x_projection();
     }
-
-    std::cout << "File [" << input_file << "] can't be open. Failed\n"; // Exception?
 }
 //////////////////////////////////////////////////////////////////////////////////////////
 

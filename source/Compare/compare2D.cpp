@@ -70,7 +70,7 @@ bool Compare2D (Triangle2D& first, Triangle2D& second) {
 
 	Segment2DTriangle segment_first(first);
 	Segment2DTriangle segment_second(second);
-//Ne pereputal?
+
 	SignDist2DTriangle SD_from_first(second, segment_first.seg_A, segment_first.seg_B, segment_first.seg_C);
 	SignDist2DTriangle SD_from_second(first, segment_second.seg_A, segment_second.seg_B, segment_second.seg_C);
 
@@ -113,7 +113,7 @@ bool check_internal(SignDist2DTriangle& tr) {
 }
 
 bool check_intersect_triangle(SignDist2DTriangle& first_from, SignDist2DTriangle& second_from, Segment2DTriangle& seg_first, Segment2DTriangle& seg_second) {
- //Is it all true?
+
 	if (check_segments(first_from.to_A.SD_A, first_from.to_A.SD_B, second_from.to_A.SD_A, second_from.to_A.SD_B, seg_second.seg_A, seg_first.seg_A)) return true;
 	if (check_segments(first_from.to_A.SD_B, first_from.to_A.SD_C, second_from.to_B.SD_A, second_from.to_B.SD_B, seg_second.seg_B, seg_first.seg_A)) return true;
 	if (check_segments(first_from.to_A.SD_C, first_from.to_A.SD_A, second_from.to_C.SD_A, second_from.to_C.SD_B, seg_second.seg_C, seg_first.seg_A)) return true;
@@ -136,7 +136,7 @@ double count_sign_dist(Point2D& point, Line2D& line) {
 bool check_segments(double first_left, double first_right, double second_left, double second_right, Segment2D& first, Segment2D& second) {
 	if (equal_double(first_left, 0) && equal_double(first_right, 0) && equal_double(second_left, 0) && equal_double(second_right, 0)) {
 
-		if (!equal_double(first.start.x, first.end.x)) { // You can short it
+		if (!equal_double(first.start.x, first.end.x)) { 
 			first_left = first.start.x;
 			first_right = first.end.x;
 

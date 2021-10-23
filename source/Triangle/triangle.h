@@ -5,7 +5,7 @@
 
 #include "double_tools.h"
 
-#define DEBUG 1
+#define DEBUG 0
 
 struct Vector {
 	double x = NAN;
@@ -14,27 +14,27 @@ struct Vector {
 
 	Vector () {}
 	Vector(double x_, double y_, double z_) : x(x_), y(y_), z(z_) {}
-	bool is_null() {
+	bool is_null() const {
 		if (equal_double(x, 0) && equal_double(y, 0) && equal_double(z, 0)) return true;
 		return false;
 	}
 
-	friend Vector operator+(Vector const &first, Vector const &second);
-	friend Vector operator-(Vector const &first, Vector const &second);
-	friend double scalar_mult(Vector const &first, Vector const &second);
-	friend Vector vector_mult(Vector const &first, Vector const &second);
-
-	double lenght();
+	double lenght() const;
 };
+
+Vector operator+(Vector const &first, Vector const &second);
+Vector operator-(Vector const &first, Vector const &second);
+double scalar_mult(Vector const &first, Vector const &second);
+Vector vector_mult(Vector const &first, Vector const &second);
 
 struct Point : Vector {
 	Point() {}
 	Point(double x_, double y_, double z_) : Vector(x_, y_, z_) {}
-
-	friend Point operator+(Point const &first, Point const &second);
-	friend Point operator-(Point const &first, Point const &second);
 	
 };    
+
+Point operator+(Point const &first, Point const &second);
+Point operator-(Point const &first, Point const &second);
 
 struct Component { // It's like Projection
 	double left;
@@ -85,8 +85,8 @@ struct Projection {
 
 	Projection(double left_, double right_) : left(left_), right(right_) {}
 	Projection(Line& main, Triangle& trian, SignDist& sign);
-
-	friend bool intersect(Projection& first, Projection& second);
 };
 
-void take_triangles(std::vector<Triangle>& triangles, std::string input_file);
+bool intersect(Projection& first, Projection& second);
+
+void take_triangles(std::vector<Triangle>& triangles, std::istream& input_potok, size_t quantity);
