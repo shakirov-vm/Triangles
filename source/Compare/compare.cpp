@@ -10,11 +10,11 @@ void compare_triangles (Triangle& zero, Triangle& first) {
 
 	Surface zero_surf(zero);
 	SignDist V_1(zero_surf, first);
-	if (std::max({V_1.dist_V_0, V_1.dist_V_1, V_1.dist_V_2}) < 0 || std::min({V_1.dist_V_0, V_1.dist_V_1, V_1.dist_V_2}) > 0) return; //false
+	if (less_double(std::max({V_1.dist_V_0, V_1.dist_V_1, V_1.dist_V_2}), 0) || great_double(std::min({V_1.dist_V_0, V_1.dist_V_1, V_1.dist_V_2}), 0)) return; //false
 
 	Surface first_surf(first);
 	SignDist V_0(first_surf, zero);
-	if (std::max({V_0.dist_V_0, V_0.dist_V_1, V_0.dist_V_2}) < 0 || std::min({V_0.dist_V_0, V_0.dist_V_1, V_0.dist_V_2}) > 0) return; //false
+	if (less_double(std::max({V_0.dist_V_0, V_0.dist_V_1, V_0.dist_V_2}), 0) || great_double(std::min({V_0.dist_V_0, V_0.dist_V_1, V_0.dist_V_2}), 0)) return; //false
 	
 	if (vector_mult(zero_surf.surf, first_surf.surf).is_null()) { 
 		if (!equal_double(zero_surf.D, first_surf.D)) return; // false

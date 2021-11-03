@@ -14,7 +14,7 @@ void sort_triangles(std::vector<Triangle>& triangles) {
 
 	for (VectIt left = triangles.begin(); left != std::prev(triangles.end()); left++) {
 		for (VectIt right = std::next(left); right != triangles.end(); right++) {
-			if (BE_double(left->x_proj.right, right->x_proj.left)) { // we can overload operator > for double?
+			if (GE_double(left->x_proj.right, right->x_proj.left)) { 
 				compare_triangles (*left, *right);
 				continue;
 			}
@@ -25,6 +25,6 @@ void sort_triangles(std::vector<Triangle>& triangles) {
 }
 
 bool compare_proj(Triangle& first, Triangle& second) {
-	return LE_double(first.x_proj.left, second.x_proj.left); 
+	return less_double(first.x_proj.left, second.x_proj.left); 
 }
 

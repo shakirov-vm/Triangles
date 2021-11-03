@@ -93,7 +93,7 @@ Segment2D::Segment2D(Point2D& start_, Point2D& end_) : start(start_), end(end_),
 }
 
 void Segment2D::set_normal(Point2D& point) {
-	if ((equation.a * point.x + equation.b * point.y + equation.c) < 0) {
+	if (less_double(equation.a * point.x + equation.b * point.y + equation.c, 0)) {
 		normal.x = -(normal.x);
 		normal.y = -(normal.y);
 	}
@@ -106,9 +106,9 @@ SignDist2D::SignDist2D(Triangle2D& trian, Segment2D& seg) { //From point to segm
 }
 
 bool check_internal(SignDist2DTriangle& tr) {
-	if (   tr.to_A.SD_A > 0 && tr.to_A.SD_B > 0 && tr.to_A.SD_C > 0 
-		&& tr.to_B.SD_A > 0 && tr.to_B.SD_B > 0 && tr.to_B.SD_C > 0 
-		&& tr.to_C.SD_A > 0 && tr.to_C.SD_B > 0 && tr.to_C.SD_C > 0) return true;
+	if (   great_double(tr.to_A.SD_A, 0) && great_double(tr.to_A.SD_B, 0) && great_double(tr.to_A.SD_C, 0) 
+		&& great_double(tr.to_B.SD_A, 0) && great_double(tr.to_B.SD_B, 0) && great_double(tr.to_B.SD_C, 0) 
+		&& great_double(tr.to_C.SD_A, 0) && great_double(tr.to_C.SD_B, 0) && great_double(tr.to_C.SD_C, 0)) return true;
 	return false;
 }
 
@@ -150,14 +150,14 @@ bool check_segments(double first_left, double first_right, double second_left, d
 			second_right = second.end.y;
 		}
 
-		if (first_left > first_right) std::swap(first_left, first_right);
-		if (second_left > second_right) std::swap(second_left, second_right);
+		if (great_double(first_left, first_right)) std::swap(first_left, first_right);
+		if (great_double(second_left, second_right)) std::swap(second_left, second_right);
 		
-		if (first_right < second_left) return false;
-    	if (second_right < first_left) return false;
+		if (less_double(first_right, second_left)) return false;
+    	if (less_double(second_right, first_left)) return false;
 
 		return true;
 	}
-	if (first_left * first_right <= 0 && second_left * second_right <= 0) return true;	
+	if (LE_double(first_left * first_right, 0) && LE_double(second_left * second_right, 0)) return true;	
 	return false;
 }

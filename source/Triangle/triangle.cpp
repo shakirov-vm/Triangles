@@ -52,6 +52,8 @@ Surface::Surface(Triangle& trian) {
     surf.y *= normalize;
     surf.z *= normalize;
     D      *= normalize;
+
+    if(ULTRA_DEBUG) printf("%d surface: %lf * x + %lf * y + %lf * z + %lf = 0\n", trian.id, surf.x, surf.y, surf.z, D);
 }
 //Line
 Line::Line(Surface& one, Surface& two) {
@@ -70,8 +72,10 @@ Line::Line(Surface& one, Surface& two) {
     refer.x = a * one.surf.x + b * two.surf.x;
     refer.y = a * one.surf.y + b * two.surf.y;
     refer.z = a * one.surf.z + b * two.surf.z;
+
+    if (ULTRA_DEBUG) printf("Line:\n\tx = %lf + t * %lf\n\ty = %lf + t * %lf\n\tz = %lf + t * %lf\n", refer.x, direct.x, refer.y, direct.y, refer.z, direct.z);
 }
-//Line
+
 Line::Line(Point& one, Point& two) {
     refer.x = one.x;
     refer.y = one.y;
@@ -90,9 +94,9 @@ SignDist::SignDist (Surface& surf, Triangle& trian) {
 //Projection
 Projection::Projection(Line& main, Triangle& trian, SignDist& sign) {
 
-    if ((sign.dist_V_0 * sign.dist_V_1) < 0) {
-        if (sign.dist_V_2 < 0) {
-            if (sign.dist_V_0 > 0) {
+    if (less_double(sign.dist_V_0 * sign.dist_V_1, 0)) {
+        if (less_double(sign.dist_V_2, 0)) {
+            if (great_double(sign.dist_V_0, 0)) {
                 std::swap(sign.dist_V_0, sign.dist_V_2);
                 std::swap(trian.A, trian.C);
             }
@@ -102,7 +106,7 @@ Projection::Projection(Line& main, Triangle& trian, SignDist& sign) {
             }
         }
         else {
-            if (sign.dist_V_0 < 0) {
+            if (less_double(sign.dist_V_0, 0)) {
                 std::swap(sign.dist_V_0, sign.dist_V_2);
                 std::swap(trian.A, trian.C);
             }
@@ -120,14 +124,17 @@ Projection::Projection(Line& main, Triangle& trian, SignDist& sign) {
     left = scalar_0 + (scalar_2 - scalar_0) * sign.dist_V_0 / (sign.dist_V_0 - sign.dist_V_2);
     right = scalar_1 + (scalar_2 - scalar_1) * sign.dist_V_1 / (sign.dist_V_1 - sign.dist_V_2);
 
-    if (left > right)
+    if (great_double(left, right))
         std::swap(left, right);
+
+    if (ULTRA_DEBUG) printf("Projection: (%lf, %lf)\n", left, right);
 }
 bool intersect(Projection& first, Projection& second) {
-    if (first.right < second.left) return false;
-    if (second.right < first.left) return false;
+    if (ULTRA_DEBUG) printf("Intersect projections: one - (%lf, %lf), two - (%lf, %lf)\n", first.left, first.right, second.left, second.right);
+    if (GE_double(first.right, second.left)) return true;
+    if (GE_double(second.right, first.left)) return true;
 
-    return true;
+    return false;
 }
 ////////////////////////////////////////////////////////////////////////////////////////
                                                       
@@ -147,18 +154,26 @@ void take_triangles(std::vector<Triangle>& triangles, std::istream& input_potok,
 }
 //////////////////////////////////////////////////////////////////////////////////////////
 
-bool equal_double(double zero, double first) {
-    return std::abs(zero - first) < eps;
+bool equal_double(double one, double two) {
+    return std::abs(one - two) < eps;
 }
 
-bool LE_double(double first, double second) {
-    if (std::abs(first - second) < eps) return true;
-    if (first < second) return true;
-    return false;
+bool great_double(double one, double two) { // one > two
+    //return equal_double(one - two, eps);
+    return one > two;
 }
 
-bool BE_double(double first, double second) {
-    if (std::abs(first - second) < eps) return true;
-    if (first > second) return true;
-    return false;
+bool less_double(double one, double two) { // one < two
+    //return !great_double(one, two);
+    return one < two;
+}
+
+bool GE_double(double one, double two) { // one >= two
+    return (equal_double(one, two) || great_double(one, two));
+    //return !less_double(one, two);
+}
+
+bool LE_double(double one, double two) { // one <= two
+    return (equal_double(one, two) || less_double(one, two));
+    //return !great_double(one, two);
 }

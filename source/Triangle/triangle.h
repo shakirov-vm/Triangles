@@ -5,7 +5,8 @@
 
 #include "double_tools.h"
 
-#define DEBUG 0
+#define DEBUG 1
+#define ULTRA_DEBUG 1
 
 struct Vector {
 	double x = NAN;
