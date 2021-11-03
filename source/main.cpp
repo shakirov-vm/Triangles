@@ -65,7 +65,8 @@ bool YourTest(std::string& input) {
 		if (DEBUG) printf("\nAll intersecting triangles:\n");
 
 		for (size_t i = 0; i < quantity; i++) {
-			if (triangles[i].intersect) std::cout << triangles[i].id << " ";
+			if (triangles[i].intersect && !DEBUG) std::cout << triangles[i].id - 1 << " ";
+			if (triangles[i].intersect && DEBUG) std::cout << triangles[i].id << " ";	
 		}
 		printf("\n");
 
@@ -151,7 +152,8 @@ bool ConsoleUse() {
 	if (DEBUG) printf("\nAll intersecting triangles:\n");
 
 	for (size_t i = 0; i < quantity; i++) {
-		if (triangles[i].intersect) std::cout << triangles[i].id << " ";
+			if (triangles[i].intersect && !DEBUG) std::cout << triangles[i].id - 1 << " ";
+			if (triangles[i].intersect && DEBUG) std::cout << triangles[i].id << " ";	
 	}
 	printf("\n");
 

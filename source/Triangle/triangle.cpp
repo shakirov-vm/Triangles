@@ -25,13 +25,6 @@ Vector vector_mult(Vector const &first, Vector const &second) {
 double Vector::lenght() const {
     return std::sqrt(x * x + y * y + z * z);
 }
-//Point
-Point operator+(Point const &first, Point const &second) {
-    return Point(first.x + second.x, first.y + second.y, first.z + second.z);
-}
-Point operator-(Point const &first, Point const &second) {
-    return Point(first.x - second.x, first.y - second.y, first.z - second.z);
-}
 //Triangle
 void Triangle::get_x_projection() {
     x_proj.left = std::min(std::min(A.x, B.x), C.x); 

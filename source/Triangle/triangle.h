@@ -5,16 +5,15 @@
 
 #include "double_tools.h"
 
-#define DEBUG 1
-#define ULTRA_DEBUG 1
+#define DEBUG 0
+#define ULTRA_DEBUG 0
 
 struct Vector {
 	double x = NAN;
 	double y = NAN;
 	double z = NAN;
 
-	Vector () {}
-	Vector(double x_, double y_, double z_) : x(x_), y(y_), z(z_) {}
+	Vector(double x_ = NAN, double y_ = NAN, double z_ = NAN) : x(x_), y(y_), z(z_) {}
 	bool is_null() const {
 		if (equal_double(x, 0) && equal_double(y, 0) && equal_double(z, 0)) return true;
 		return false;
@@ -28,14 +27,7 @@ Vector operator-(Vector const &first, Vector const &second);
 double scalar_mult(Vector const &first, Vector const &second);
 Vector vector_mult(Vector const &first, Vector const &second);
 
-struct Point : Vector {
-	Point() {}
-	Point(double x_, double y_, double z_) : Vector(x_, y_, z_) {}
-	
-};    
-
-Point operator+(Point const &first, Point const &second);
-Point operator-(Point const &first, Point const &second);
+using Point = Vector;
 
 struct Component { // It's like Projection
 	double left;

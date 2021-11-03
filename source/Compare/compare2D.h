@@ -5,13 +5,10 @@ struct Vector2D {
 	double x = NAN;
 	double y = NAN;
 
-	Vector2D() {}
-	Vector2D(double x_, double y_) : x(x_), y(y_) {}
+	Vector2D(double x_ = NAN, double y_ = NAN) : x(x_), y(y_) {}
 };
 
-struct Point2D : Vector2D {
-	Point2D(double x_, double y_) : Vector2D(x_, y_) {}
-};
+using Point2D = Vector2D;
 
 struct Triangle2D {
 	Point2D A;
