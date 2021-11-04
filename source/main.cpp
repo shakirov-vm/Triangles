@@ -100,18 +100,16 @@ bool E2ETest(std::string& input, std::string& answer) {
 		std::vector<size_t> answer_res;
 
 		for (size_t i = 0; i < quantity; i++) {
-			if (triangles[i].intersect) input_res.push_back(triangles[i].id);
+			if (triangles[i].intersect) input_res.push_back(triangles[i].id - 1); // we corrected 
 		}
 
-		size_t tmp = 0;
+		size_t tmp = -1; // I understand
 
-		if (answer_potok.tellg() != 0) {
-
-			while(!answer_potok.eof()) {
-				answer_potok >> tmp;
-				if (tmp == 0) answer_res.push_back(tmp);	
-			}
-		}
+		while(true) {
+			if(tmp != -1) answer_res.push_back(tmp);
+			answer_potok >> tmp;
+			if(answer_potok.eof()) break;
+		}			
 
 		size_t error = 0;
 
@@ -120,8 +118,15 @@ bool E2ETest(std::string& input, std::string& answer) {
 			return true;
 		}
 
+		if (DEBUG) printf("result - answer, answer size - %ld\n", answer_res.size());
+
 		for (size_t i = 0; i != answer_res.size(); i++) {
-			if (input_res[i] != answer_res[i]) error++; 
+			if (DEBUG) printf("\t%ld - %ld", input_res[i], answer_res[i]);
+			if (input_res[i] != answer_res[i]) {
+				if (DEBUG) printf("\t!!!");
+				error++;
+			} 
+			if (DEBUG) printf("\n");
 		}
 
 		if (error) {
