@@ -6,6 +6,7 @@ struct Vector2D {
 	double y = NAN;
 
 	Vector2D(double x_ = NAN, double y_ = NAN) : x(x_), y(y_) {}
+	Vector2D(Vector 3D) : x(3D.x), y(3D.y);
 };
 
 using Point2D = Vector2D;
@@ -16,6 +17,7 @@ struct Triangle2D {
 	Point2D C;
 	
 	Triangle2D(Point2D& A_, Point2D& B_, Point2D& C_) : A(A_), B(B_), C(C_) {}
+	Triangle2D(Triangle& trian3D, matrix3& A);
 };
 
 struct Line2D {

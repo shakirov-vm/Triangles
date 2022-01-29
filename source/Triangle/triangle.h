@@ -5,7 +5,7 @@
 
 #include "double_tools.h"
 
-#define DEBUG 0
+#define DEBUG 1
 #define ULTRA_DEBUG 0
 
 struct Vector {
@@ -20,6 +20,13 @@ struct Vector {
 	}
 
 	double lenght() const;
+	void extend(double scalar) {
+		if (equal_double(scalar, 0)) return; //maybe exception?
+		x /= scalar;
+		y /= scalar;
+		z /= scalar;
+	}
+	void left_matrix_mult(struct matrix3& matrix);
 };
 
 Vector operator+(Vector const &first, Vector const &second);
@@ -83,3 +90,21 @@ struct Projection {
 bool intersect(Projection& first, Projection& second);
 
 void take_triangles(std::vector<Triangle>& triangles, std::istream& input_potok, size_t quantity);
+
+struct matrix3 {
+	std::array<std::array<double, 3>, 3> matrix;
+
+	matrix3(std::array<double, 4> quaternion) {
+		matrix[1][1] = 2 * (quaternion[0] * quaternion[0] + quaternion[1] * quaternion[1]) - 1;
+		matrix[1][2] = 2 * (quaternion[1] * quaternion[2] - quaternion[0] * quaternion[3]);
+		matrix[1][3] = 2 * (quaternion[1] * quaternion[3] + quaternion[0] * quaternion[2]);
+
+		matrix[2][1] = 2 * (quaternion[1] * quaternion[2] + quaternion[0] * quaternion[3]);
+		matrix[2][2] = 2 * (quaternion[0] * quaternion[0] + quaternion[2] * quaternion[2]) - 1;
+		matrix[2][3] = 2 * (quaternion[2] * quaternion[3] - quaternion[0] * quaternion[1]);
+
+		matrix[3][1] = 2 * (quaternion[1] * quaternion[3] - quaternion[0] * quaternion[2]);
+		matrix[3][2] = 2 * (quaternion[2] * quaternion[3] + quaternion[0] * quaternion[1]);
+		matrix[3][3] = 2 * (quaternion[0] * quaternion[0] + quaternion[3] * quaternion[3]) - 1;
+	}
+};

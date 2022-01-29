@@ -25,6 +25,17 @@ Vector vector_mult(Vector const &first, Vector const &second) {
 double Vector::lenght() const {
     return std::sqrt(x * x + y * y + z * z);
 }
+
+
+void Vector::left_matrix_mult(struct matrix3& A) {
+    double x_old = x;
+    double y_old = y;
+    double z_old = z;
+
+    x = A[1][1] * x_old + A[1][2] * y_old + A[1][3] * z_old;
+    y = A[2][1] * x_old + A[2][2] * y_old + A[2][3] * z_old;
+    z = A[3][1] * x_old + A[3][2] * y_old + A[3][3] * z_old;
+}
 //Triangle
 void Triangle::get_x_projection() {
     x_proj.left = std::min(std::min(A.x, B.x), C.x); 
@@ -124,10 +135,14 @@ Projection::Projection(Line& main, Triangle& trian, SignDist& sign) {
 }
 bool intersect(Projection& first, Projection& second) {
     if (ULTRA_DEBUG) printf("Intersect projections: one - (%lf, %lf), two - (%lf, %lf)\n", first.left, first.right, second.left, second.right);
-    if (GE_double(first.right, second.left)) return true;
-    if (GE_double(second.right, first.left)) return true;
+    
+    if (equal_double(first.right, second.left)) return true;
+    if (equal_double(second.right, first.left)) return true;
 
-    return false;
+    if (less_double(first.right, second.left)) return false;
+    if (less_double(second.right, first.left)) return false;
+
+    return true;
 }
 ////////////////////////////////////////////////////////////////////////////////////////
                                                       

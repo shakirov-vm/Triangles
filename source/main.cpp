@@ -65,7 +65,7 @@ bool YourTest(std::string& input) {
 		if (DEBUG) printf("\nAll intersecting triangles:\n");
 
 		for (size_t i = 0; i < quantity; i++) {
-			if (triangles[i].intersect && !DEBUG) std::cout << triangles[i].id - 1 << " ";
+			if (triangles[i].intersect && !DEBUG) std::cout << triangles[i].id - 1 << "\n";
 			if (triangles[i].intersect && DEBUG) std::cout << triangles[i].id << " ";	
 		}
 		printf("\n");
@@ -105,13 +105,12 @@ bool E2ETest(std::string& input, std::string& answer) {
 
 		size_t tmp = 0;
 
-		if (answer_potok.tellg() != 0) {
-
-			while(!answer_potok.eof()) {
-				answer_potok >> tmp;
-				if (tmp == 0) answer_res.push_back(tmp);	
-			}
+		while(!answer_potok.eof()) {
+			printf("THERE\n");
+			answer_potok >> tmp;
+			if (tmp != 0) answer_res.push_back(tmp);	
 		}
+
 
 		size_t error = 0;
 
@@ -120,8 +119,14 @@ bool E2ETest(std::string& input, std::string& answer) {
 			return true;
 		}
 
+		if (DEBUG) printf("result - answer, answer size - %ld\n", answer_res.size());
 		for (size_t i = 0; i != answer_res.size(); i++) {
-			if (input_res[i] != answer_res[i]) error++; 
+printf("%ld - %ld\n", input_res[i], answer_res[i]);
+			if (DEBUG && input_res[i] == answer_res[i]) printf("%ld - %ld\n", input_res[i], answer_res[i]);
+			if (input_res[i] != answer_res[i]) {
+				if (DEBUG) printf("%ld - %ld\n", input_res[i], answer_res[i]);
+				error++;
+			} 
 		}
 
 		if (error) {
@@ -152,7 +157,7 @@ bool ConsoleUse() {
 	if (DEBUG) printf("\nAll intersecting triangles:\n");
 
 	for (size_t i = 0; i < quantity; i++) {
-			if (triangles[i].intersect && !DEBUG) std::cout << triangles[i].id - 1 << " ";
+			if (triangles[i].intersect && !DEBUG) std::cout << triangles[i].id - 1 << "\n";
 			if (triangles[i].intersect && DEBUG) std::cout << triangles[i].id << " ";	
 	}
 	printf("\n");

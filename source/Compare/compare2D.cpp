@@ -1,6 +1,29 @@
-
+#include <cmath>
 #include "../Triangle/triangle.h"
 #include "compare2D.h"
+
+void handle2D (Triangle& first, Triangle& second, Surface& surf) { 
+
+	Vector old_normal(surf.surf.A, surf.surf.B, surf.surf.C);
+	Vector new_normal(0, 0, 1);
+
+	normal_mult = old_normal.lenght() * new_normal.lenght();
+
+	Vector e = vector_mult(old_normal, new_normal).extend(normal_mult);
+	double phi = acos(scalar_mult(old_normal, new_normal) / normal_mult);
+
+	std::array<double, 4> quaternion;
+	quaternion[0] = cos(phi/2);
+	quaternion[1] = e.x * sin(phi/2);
+	quaternion[2] = e.y * sin(phi/2);
+	quaternion[3] = e.z * sin(phi/2);
+
+	Triangle2D()
+}
+
+
+
+
 
 void handle2D (Triangle& first, Triangle& second, Surface& surf) { 
 
@@ -79,6 +102,15 @@ bool Compare2D (Triangle2D& first, Triangle2D& second) {
 	if (check_internal(SD_from_second)) return true;
 
 	return false;
+}
+// That will not compile. Do it better
+Triangle2D::Triangle2D(Triangle& trian3D, matrix3& matrix) {
+	Vector tmp3D = trian3D.A;
+	A(tmp3D.left_matrix_mult(matrix));
+	tmp3D = trian3D.B;
+	B(tmp3D.left_matrix_mult(matrix));
+	tmp3D = trian3D.C;
+	C(tmp3D.left_matrix_mult(matrix));
 }
 
 Line2D::Line2D (Point2D& first, Point2D& second) {
