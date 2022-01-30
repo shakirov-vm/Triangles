@@ -100,16 +100,24 @@ bool E2ETest(std::string& input, std::string& answer) {
 		std::vector<size_t> answer_res;
 
 		for (size_t i = 0; i < quantity; i++) {
-			if (triangles[i].intersect) input_res.push_back(triangles[i].id);
+			if (triangles[i].intersect) input_res.push_back(triangles[i].id - 1); // we corrected 
 		}
 
-		size_t tmp = 0;
+		size_t tmp = -1; // I understand
 
+<<<<<<< HEAD
 		while(!answer_potok.eof()) {
 			printf("THERE\n");
 			answer_potok >> tmp;
 			if (tmp != 0) answer_res.push_back(tmp);	
 		}
+=======
+		while(true) {
+			if(tmp != -1) answer_res.push_back(tmp);
+			answer_potok >> tmp;
+			if(answer_potok.eof()) break;
+		}			
+>>>>>>> 54cdefd6280c87bbfda733e5dc8240b7402986de
 
 
 		size_t error = 0;
@@ -120,6 +128,7 @@ bool E2ETest(std::string& input, std::string& answer) {
 		}
 
 		if (DEBUG) printf("result - answer, answer size - %ld\n", answer_res.size());
+<<<<<<< HEAD
 		for (size_t i = 0; i != answer_res.size(); i++) {
 printf("%ld - %ld\n", input_res[i], answer_res[i]);
 			if (DEBUG && input_res[i] == answer_res[i]) printf("%ld - %ld\n", input_res[i], answer_res[i]);
@@ -127,6 +136,16 @@ printf("%ld - %ld\n", input_res[i], answer_res[i]);
 				if (DEBUG) printf("%ld - %ld\n", input_res[i], answer_res[i]);
 				error++;
 			} 
+=======
+
+		for (size_t i = 0; i != answer_res.size(); i++) {
+			if (DEBUG) printf("\t%ld - %ld", input_res[i], answer_res[i]);
+			if (input_res[i] != answer_res[i]) {
+				if (DEBUG) printf("\t!!!");
+				error++;
+			} 
+			if (DEBUG) printf("\n");
+>>>>>>> 54cdefd6280c87bbfda733e5dc8240b7402986de
 		}
 
 		if (error) {

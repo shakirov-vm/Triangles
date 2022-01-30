@@ -57,7 +57,7 @@ Surface::Surface(Triangle& trian) {
     surf.z *= normalize;
     D      *= normalize;
 
-    if(ULTRA_DEBUG) printf("%d surface: %lf * x + %lf * y + %lf * z + %lf = 0\n", trian.id, surf.x, surf.y, surf.z, D);
+    if(ULTRA_DEBUG) printf("%ld surface: %lf * x + %lf * y + %lf * z + %lf = 0\n", trian.id, surf.x, surf.y, surf.z, D);
 }
 //Line
 Line::Line(Surface& one, Surface& two) {
@@ -138,10 +138,17 @@ bool intersect(Projection& first, Projection& second) {
     
     if (equal_double(first.right, second.left)) return true;
     if (equal_double(second.right, first.left)) return true;
+<<<<<<< HEAD
 
     if (less_double(first.right, second.left)) return false;
     if (less_double(second.right, first.left)) return false;
 
+=======
+
+    if (less_double(first.right, second.left)) return false;
+    if (less_double(second.right, first.left)) return false;
+
+>>>>>>> 54cdefd6280c87bbfda733e5dc8240b7402986de
     return true;
 }
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -163,7 +170,7 @@ void take_triangles(std::vector<Triangle>& triangles, std::istream& input_potok,
 //////////////////////////////////////////////////////////////////////////////////////////
 
 bool equal_double(double one, double two) {
-    return std::abs(one - two) < eps;
+    return std::abs(one - two) < eps; 
 }
 
 bool great_double(double one, double two) { // one > two
