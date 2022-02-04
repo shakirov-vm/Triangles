@@ -3,10 +3,11 @@
 #include <vector>
 #include <string>
 #include <array>
+#include <iostream>
 
 #include "double_tools.h"
 
-#define DEBUG 1
+#define DEBUG 0
 #define ULTRA_DEBUG 0
 
 struct Vector {
@@ -21,19 +22,27 @@ struct Vector {
 	}
 
 	double lenght() const;
-	void extend(double scalar) {
+	void mult_length(double scalar) {
 		if (equal_double(scalar, 0)) return; //maybe exception?
-		x /= scalar;
-		y /= scalar;
-		z /= scalar;
+		x *= scalar;
+		y *= scalar;
+		z *= scalar;
 	}
-	Vector left_matrix_mult(struct matrix3& matrix);
+	Vector reverse() {
+		x = -x;
+		y = -y;
+		z = -z;
+
+		return *this;
+	}
 };
 
 Vector operator+(Vector const &first, Vector const &second);
 Vector operator-(Vector const &first, Vector const &second);
 double scalar_mult(Vector const &first, Vector const &second);
 Vector vector_mult(Vector const &first, Vector const &second);
+Vector operator*(Vector const &vec, double const scal);
+Vector operator*(double const scal, Vector const &vec);
 
 using Point = Vector;
 
@@ -57,7 +66,7 @@ struct Triangle {
 };
 
 struct Surface {
-	Vector surf; //Name this normal
+	Vector surf;
 	double D;
 
 	Surface(Triangle& trian);
@@ -92,10 +101,13 @@ bool intersect(Projection& first, Projection& second);
 
 void take_triangles(std::vector<Triangle>& triangles, std::istream& input_potok, size_t quantity);
 
+/*
 struct matrix3 {
 	std::array<std::array<double, 3>, 3> matrix;
 
 	matrix3(std::array<double, 4> quaternion) {
+		printf("quaternion is (%lf, %lf, %lf, %lf", quaternion[0], quaternion[1], quaternion[2], quaternion[3]);
+
 		matrix[1][1] = 2 * (quaternion[0] * quaternion[0] + quaternion[1] * quaternion[1]) - 1;
 		matrix[1][2] = 2 * (quaternion[1] * quaternion[2] - quaternion[0] * quaternion[3]);
 		matrix[1][3] = 2 * (quaternion[1] * quaternion[3] + quaternion[0] * quaternion[2]);
@@ -107,5 +119,45 @@ struct matrix3 {
 		matrix[3][1] = 2 * (quaternion[1] * quaternion[3] - quaternion[0] * quaternion[2]);
 		matrix[3][2] = 2 * (quaternion[2] * quaternion[3] + quaternion[0] * quaternion[1]);
 		matrix[3][3] = 2 * (quaternion[0] * quaternion[0] + quaternion[3] * quaternion[3]) - 1;
+
+		dump();
+	}
+	void dump() {
+		/*std::cout >> std::endl;
+		std::cout >> matrix[1][1] >> " " >> matrix[1][2] >> " " matrix[1][3] >> std::endl;
+		std::cout >> matrix[2][1] >> " " >> matrix[2][2] >> " " matrix[2][3] >> std::endl;
+		std::cout >> matrix[3][1] >> " " >> matrix[3][2] >> " " matrix[3][3] >> std::endl;
+		printf("\n");
+		printf("%lf %lf %lf\n", matrix[1][1], matrix[1][2], matrix[1][3]);
+		printf("%lf %lf %lf\n", matrix[2][1], matrix[2][2], matrix[2][3]);
+		printf("%lf %lf %lf\n", matrix[3][1], matrix[3][2], matrix[3][3]);
 	}
 };
+*/
+
+struct Quaternion {
+
+	double w;
+	Vector qvec;
+
+	Quaternion() : w(NAN), qvec() {}
+	Quaternion(double phi, Vector e) {
+		w = cos(phi/2);
+		qvec.x = e.x * sin(phi/2);
+		qvec.y = e.y * sin(phi/2);
+		qvec.z = e.z * sin(phi/2);
+	}
+
+	Quaternion(Vector vec3D) : w(0), qvec(vec3D) {}
+	Quaternion conjugate() {
+		Quaternion returned = *this;
+		returned.qvec = qvec.reverse();
+		return returned;
+	}
+
+	void dump() {
+		printf("(%lf, %lf, %lf, %lf)", w, qvec.x, qvec.y, qvec.z); // maybe will better do operator for this? but...
+	}
+};
+
+Quaternion operator*(Quaternion const &first, Quaternion const &second);

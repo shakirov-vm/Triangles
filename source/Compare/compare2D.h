@@ -17,10 +17,16 @@ struct Triangle2D {
 	Point2D C;
 	
 	Triangle2D(Point2D& A_, Point2D& B_, Point2D& C_) : A(A_), B(B_), C(C_) {}
-	Triangle2D(Triangle& trian3D, matrix3& matrix, Vector shift) : A((trian3D.A - shift).left_matrix_mult(matrix)), 
-			  B((trian3D.B - shift).left_matrix_mult(matrix)), C((trian3D.C - shift).left_matrix_mult(matrix)) {}
-	Triangle2D(Triangle& trian3D, matrix3& matrix, Vector shift) {
-		
+	/*Triangle2D(Triangle& trian3D, matrix3& matrix, Vector shift) : A((trian3D.A - shift).left_matrix_mult(matrix)), 
+			  B((trian3D.B - shift).left_matrix_mult(matrix)), C((trian3D.C - shift).left_matrix_mult(matrix)) {}*/
+	Triangle2D(Triangle& trian3D, Quaternion& quat, Vector shift) {
+		printf("old A - shift: (%lf, %lf, %lf)\n", (trian3D.A - shift).x, (trian3D.A - shift).y, (trian3D.A - shift).z);
+		Quaternion new_p = quat * Quaternion(trian3D.A - shift) * quat.conjugate();
+		printf("conjugate quaternion:\n"); // Maybe it don't conjugate!
+		quat.conjugate().dump();
+		printf("\n");
+		printf("new A: (%lf, %lf, %lf)\n", new_p.qvec.x, new_p.qvec.y, new_p.qvec.z);
+
 	}
 };
 

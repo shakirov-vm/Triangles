@@ -25,17 +25,21 @@ Vector vector_mult(Vector const &first, Vector const &second) {
 double Vector::lenght() const {
     return std::sqrt(x * x + y * y + z * z);
 }
+Vector operator*(Vector const &vec, double const scal) {
+    return Vector(scal * vec.x, scal * vec.y, scal * vec.z);
+}
+Vector operator*(double const scal, Vector const &vec) {
+    return Vector(scal * vec.x, scal * vec.y, scal * vec.z);
+}
 
-Vector Vector::left_matrix_mult(struct matrix3& A) {
-    double x_old = x;
-    double y_old = y;
-    double z_old = z;
 
-    x = A.matrix[0][0] * x_old + A.matrix[0][1] * y_old + A.matrix[0][2] * z_old;
-    y = A.matrix[1][0] * x_old + A.matrix[1][1] * y_old + A.matrix[1][2] * z_old;
-    z = A.matrix[2][0] * x_old + A.matrix[2][1] * y_old + A.matrix[2][2] * z_old;
+Quaternion operator*(Quaternion const &first, Quaternion const &second) {
 
-    return *this; // ?? we must return this*?
+    Quaternion returned; //we can't do second constructor
+    returned.w = first.w + second.w - scalar_mult(first.qvec, second.qvec);
+    returned.qvec = second.w * first.qvec + first.w * second.qvec + vector_mult(first.qvec, second.qvec);
+
+    return returned;
 }
 //Triangle
 void Triangle::get_x_projection() {
@@ -52,8 +56,6 @@ Surface::Surface(Triangle& trian) {
     D = - surf.x * trian.A.x - surf.y * trian.A.y - surf.z * trian.A.z; 
 
     double normalize = 1 / surf.lenght();
-
-    if (surf.x < 0) normalize = -normalize;
 
     surf.x *= normalize;
     surf.y *= normalize;
@@ -141,6 +143,18 @@ bool intersect(Projection& first, Projection& second) {
     
     if (equal_double(first.right, second.left)) return true;
     if (equal_double(second.right, first.left)) return true;
+
+    if (less_double(first.right, second.left)) return false;
+    if (less_double(second.right, first.left)) return false;
+
+    return true;
+}
+/* ???????????????????????????????????????????????????????????????????????????????
+bool intersect(Projection& first, Projection& second) {
+    if (ULTRA_DEBUG) printf("Intersect projections: one - (%lf, %lf), two - (%lf, %lf)\n", first.left, first.right, second.left, second.right);
+    
+    if (equal_double(first.right, second.left)) return true;
+    if (equal_double(second.right, first.left)) return true;
 //<<<<<<< HEAD
 
     if (less_double(first.right, second.left)) return false;
@@ -154,6 +168,7 @@ bool intersect(Projection& first, Projection& second) {
 //>>>>>>> 54cdefd6280c87bbfda733e5dc8240b7402986de
     return true;
 }
+*/
 ////////////////////////////////////////////////////////////////////////////////////////
                                                       
 void take_triangles(std::vector<Triangle>& triangles, std::istream& input_potok, size_t quantity) {
