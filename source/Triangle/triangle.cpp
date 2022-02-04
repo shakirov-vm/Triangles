@@ -26,15 +26,16 @@ double Vector::lenght() const {
     return std::sqrt(x * x + y * y + z * z);
 }
 
-
-void Vector::left_matrix_mult(struct matrix3& A) {
+Vector Vector::left_matrix_mult(struct matrix3& A) {
     double x_old = x;
     double y_old = y;
     double z_old = z;
 
-    x = A[1][1] * x_old + A[1][2] * y_old + A[1][3] * z_old;
-    y = A[2][1] * x_old + A[2][2] * y_old + A[2][3] * z_old;
-    z = A[3][1] * x_old + A[3][2] * y_old + A[3][3] * z_old;
+    x = A.matrix[0][0] * x_old + A.matrix[0][1] * y_old + A.matrix[0][2] * z_old;
+    y = A.matrix[1][0] * x_old + A.matrix[1][1] * y_old + A.matrix[1][2] * z_old;
+    z = A.matrix[2][0] * x_old + A.matrix[2][1] * y_old + A.matrix[2][2] * z_old;
+
+    return *this; // ?? we must return this*?
 }
 //Triangle
 void Triangle::get_x_projection() {
@@ -51,6 +52,8 @@ Surface::Surface(Triangle& trian) {
     D = - surf.x * trian.A.x - surf.y * trian.A.y - surf.z * trian.A.z; 
 
     double normalize = 1 / surf.lenght();
+
+    if (surf.x < 0) normalize = -normalize;
 
     surf.x *= normalize;
     surf.y *= normalize;
@@ -138,17 +141,17 @@ bool intersect(Projection& first, Projection& second) {
     
     if (equal_double(first.right, second.left)) return true;
     if (equal_double(second.right, first.left)) return true;
-<<<<<<< HEAD
+//<<<<<<< HEAD
 
     if (less_double(first.right, second.left)) return false;
     if (less_double(second.right, first.left)) return false;
 
-=======
+//=======
 
     if (less_double(first.right, second.left)) return false;
     if (less_double(second.right, first.left)) return false;
 
->>>>>>> 54cdefd6280c87bbfda733e5dc8240b7402986de
+//>>>>>>> 54cdefd6280c87bbfda733e5dc8240b7402986de
     return true;
 }
 ////////////////////////////////////////////////////////////////////////////////////////

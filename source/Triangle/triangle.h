@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <string>
+#include <array>
 
 #include "double_tools.h"
 
@@ -26,7 +27,7 @@ struct Vector {
 		y /= scalar;
 		z /= scalar;
 	}
-	void left_matrix_mult(struct matrix3& matrix);
+	Vector left_matrix_mult(struct matrix3& matrix);
 };
 
 Vector operator+(Vector const &first, Vector const &second);
@@ -56,7 +57,7 @@ struct Triangle {
 };
 
 struct Surface {
-	Vector surf;
+	Vector surf; //Name this normal
 	double D;
 
 	Surface(Triangle& trian);

@@ -4,12 +4,13 @@
 
 void handle2D (Triangle& first, Triangle& second, Surface& surf) { 
 
-	Vector old_normal(surf.surf.A, surf.surf.B, surf.surf.C);
+	Vector old_normal(surf.surf.x, surf.surf.y, surf.surf.z);
 	Vector new_normal(0, 0, 1);
 
-	normal_mult = old_normal.lenght() * new_normal.lenght();
+	double normal_mult = old_normal.lenght() * new_normal.lenght();
 
-	Vector e = vector_mult(old_normal, new_normal).extend(normal_mult);
+	Vector e = vector_mult(old_normal, new_normal);
+	e.extend(normal_mult);
 	double phi = acos(scalar_mult(old_normal, new_normal) / normal_mult);
 
 	std::array<double, 4> quaternion;
@@ -17,75 +18,25 @@ void handle2D (Triangle& first, Triangle& second, Surface& surf) {
 	quaternion[1] = e.x * sin(phi/2);
 	quaternion[2] = e.y * sin(phi/2);
 	quaternion[3] = e.z * sin(phi/2);
+//Sign?
+	double k = -surf.D / (surf.surf.x * surf.surf.x + surf.surf.y * surf.surf.y + surf.surf.z * surf.surf.z);
+	matrix3 matrix(quaternion);
+	Vector shift(k * surf.surf.x, k * surf.surf.y, k * surf.surf.z);
+	Triangle2D first2D(first, matrix, shift);
+	Triangle2D second2D(second, matrix, shift); 
 
-	Triangle2D()
-}
+	printf("quaternion is (%lf, %lf, %lf, %lf)\n", quaternion[0], quaternion[1], quaternion[2], quaternion[3]);
+	printf("normal is (%lf, %lf, %lf)\n", surf.surf.x, surf.surf.y, surf.surf.z);
+	printf("first trian, point B in start: (%lf, %lf, %lf)\n", first.B.x, first.B.y, first.B.z);
+	printf("first trian, point B in end  : (%lf, %lf, %lf)\n", (first.B - shift).left_matrix_mult(matrix).x, (first.B - shift).left_matrix_mult(matrix).y, (first.B - shift).left_matrix_mult(matrix).z);
 
+	printf("first 2D is : A(%lf, %lf), B(%lf, %lf)\n", first.A.x, first.A.y, first.B.x, first.B.y);
+	printf("second 2D is : A(%lf, %lf), B(%lf, %lf)\n", second.A.x, second.A.y, second.B.x, second.B.y);
 
-
-
-
-void handle2D (Triangle& first, Triangle& second, Surface& surf) { 
-
-	if (equal_double(surf.surf.z, 0)) {
-		if (equal_double(surf.surf.y, 0)) {
-			Point2D first_A(first.A.z, first.A.y);
-			Point2D first_B(first.B.z, first.B.y);
-			Point2D first_C(first.C.z, first.C.y);
-
-			Point2D second_A(second.A.z, second.A.y);
-			Point2D second_B(second.B.z, second.B.y);
-			Point2D second_C(second.C.z, second.C.y);
-
-			Triangle2D new_first(first_A, first_B, first_C);
-			Triangle2D new_second(second_A, second_B, second_C);
-
-			if (Compare2D(new_first, new_second)) {
-				if (DEBUG) printf("2D Triangles intersect: (%ld; %ld)\n", first.id, second.id);
-				first.intersect = true;
-				second.intersect = true;
-			}
-			return;
-		}
-		else {
-			Point2D first_A(first.A.x, first.A.z);
-			Point2D first_B(first.B.x, first.B.z);
-			Point2D first_C(first.C.x, first.C.z);
-
-			Point2D second_A(second.A.x, second.A.z);
-			Point2D second_B(second.B.x, second.B.z);
-			Point2D second_C(second.C.x, second.C.z);
-
-			Triangle2D new_first(first_A, first_B, first_C);
-			Triangle2D new_second(second_A, second_B, second_C);
-
-			if (Compare2D(new_first, new_second)) {
-				if (DEBUG) printf("2D Triangles intersect: (%ld; %ld)\n", first.id, second.id);
-				first.intersect = true;
-				second.intersect = true;
-			}
-			return;
-		}
-	}
-
-	else {
-		Point2D first_A(first.A.x, first.A.y);
-		Point2D first_B(first.B.x, first.B.y);
-		Point2D first_C(first.C.x, first.C.y);
-
-		Point2D second_A(second.A.x, second.A.y);
-		Point2D second_B(second.B.x, second.B.y);
-		Point2D second_C(second.C.x, second.C.y);
-
-		Triangle2D new_first(first_A, first_B, first_C);
-		Triangle2D new_second(second_A, second_B, second_C);
-
-		if (Compare2D(new_first, new_second)) {
-			if (DEBUG) printf("2D Triangles intersect: (%ld; %ld)\n", first.id, second.id);
-			first.intersect = true;
-			second.intersect = true;
-		}
-		return;
+	if (Compare2D(first2D, second2D)) {
+		if (DEBUG) printf("2D Triangles intersect: (%ld; %ld)\n", first.id, second.id);
+		first.intersect = true;
+		second.intersect = true;
 	}
 }
 
@@ -102,15 +53,6 @@ bool Compare2D (Triangle2D& first, Triangle2D& second) {
 	if (check_internal(SD_from_second)) return true;
 
 	return false;
-}
-// That will not compile. Do it better
-Triangle2D::Triangle2D(Triangle& trian3D, matrix3& matrix) {
-	Vector tmp3D = trian3D.A;
-	A(tmp3D.left_matrix_mult(matrix));
-	tmp3D = trian3D.B;
-	B(tmp3D.left_matrix_mult(matrix));
-	tmp3D = trian3D.C;
-	C(tmp3D.left_matrix_mult(matrix));
 }
 
 Line2D::Line2D (Point2D& first, Point2D& second) {
