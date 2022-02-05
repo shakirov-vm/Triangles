@@ -17,10 +17,11 @@ void compare_triangles (Triangle& zero, Triangle& first) {
 	if (less_double(std::max({V_0.dist_V_0, V_0.dist_V_1, V_0.dist_V_2}), 0) || great_double(std::min({V_0.dist_V_0, V_0.dist_V_1, V_0.dist_V_2}), 0)) return; //false
 	
 	if (vector_mult(zero_surf.surf, first_surf.surf).is_null()) { 
-		printf("2D\n");
+		
 		if (!equal_double(zero_surf.D, first_surf.D)) return; // false
 		
 		if (equal_double(zero_surf.D, first_surf.D)) {
+
 			handle2D (zero, first, zero_surf);
 			return;
 		}

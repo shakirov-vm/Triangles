@@ -4,7 +4,7 @@
 
 
 void handle2D (Triangle& first, Triangle& second, Surface& surf) { 
-printf("True 2D\n");
+
 	Vector old_normal(surf.surf.x, surf.surf.y, surf.surf.z);
 	Vector new_normal(0, 0, 1);
 
@@ -12,30 +12,19 @@ printf("True 2D\n");
 
 	double normal_mult = old_normal.lenght() * new_normal.lenght();
 
-	printf("normal_mult is %lf\n", normal_mult);
-
 	Vector e = vector_mult(old_normal, new_normal);
-	e.mult_length(1/normal_mult);
-	e.mult_length(1/(e.lenght())); // ?
-	printf("e is (%lf, %lf, %lf)\n", e.x, e.y, e.z);
-	double phi = acos(scalar_mult(old_normal, new_normal) / normal_mult);
+	if (!equal_double(e.lenght(), 0)) e.mult_length(1/(e.lenght()));
 
+	double phi = acos(scalar_mult(old_normal, new_normal) / normal_mult);
+	
 	Quaternion quaternion(phi, e);
 
-	printf("quaternion is (%lf, %lf, %lf, %lf)\n", quaternion.w, quaternion.qvec.x, quaternion.qvec.y, quaternion.qvec.z);
-//Sign?
 	double k = -surf.D / (surf.surf.x * surf.surf.x + surf.surf.y * surf.surf.y + surf.surf.z * surf.surf.z);
 	Vector shift(k * surf.surf.x, k * surf.surf.y, k * surf.surf.z);
-	printf("shift is (%lf, %lf, %lf)\n", shift.x, shift.y, shift.z);
+
 	Triangle2D first2D(first, quaternion, shift);
 	Triangle2D second2D(second, quaternion, shift); 
 
-	printf("normal is (%lf, %lf, %lf)\n", surf.surf.x, surf.surf.y, surf.surf.z);
-	printf("first trian, point B in start: (%lf, %lf, %lf)\n", first.B.x, first.B.y, first.B.z);
-
-	printf("first 2D is : A(%lf, %lf), B(%lf, %lf)\n", first.A.x, first.A.y, first.B.x, first.B.y);
-	printf("second 2D is : A(%lf, %lf), B(%lf, %lf)\n", second.A.x, second.A.y, second.B.x, second.B.y);
-
 	if (Compare2D(first2D, second2D)) {
 		if (DEBUG) printf("2D Triangles intersect: (%ld; %ld)\n", first.id, second.id);
 		first.intersect = true;
@@ -43,55 +32,6 @@ printf("True 2D\n");
 	}
 }
 
-
-
-/*
-void handle2D (Triangle& first, Triangle& second, Surface& surf) { 
-
-	Vector old_normal(surf.surf.x, surf.surf.y, surf.surf.z);
-	Vector new_normal(0, 0, 1);
-
-	printf("old normal is (%lf, %lf, %lf)\n", surf.surf.x, surf.surf.y, surf.surf.z);
-
-	double normal_mult = old_normal.lenght() * new_normal.lenght();
-
-	printf("normal_mult is %lf\n", normal_mult);
-
-	Vector e = vector_mult(old_normal, new_normal);
-	e.mult_length(1/normal_mult);
-	e.mult_length(1/(e.lenght())); // ?
-	printf("e is (%lf, %lf, %lf)\n", e.x, e.y, e.z);
-	double phi = acos(scalar_mult(old_normal, new_normal) / normal_mult);
-
-	std::array<double, 4> quaternion;
-	quaternion[0] = cos(phi/2);
-	quaternion[1] = e.x * sin(phi/2);
-	quaternion[2] = e.y * sin(phi/2);
-	quaternion[3] = e.z * sin(phi/2);
-
-	printf("quaternion is (%lf, %lf, %lf, %lf)\n", quaternion[0], quaternion[1], quaternion[2], quaternion[3]);
-//Sign?
-	double k = -surf.D / (surf.surf.x * surf.surf.x + surf.surf.y * surf.surf.y + surf.surf.z * surf.surf.z);
-	matrix3 matrix(quaternion);
-	Vector shift(k * surf.surf.x, k * surf.surf.y, k * surf.surf.z);
-	printf("shift is (%lf, %lf, %lf)\n", shift.x, shift.y, shift.z);
-	Triangle2D first2D(first, matrix, shift);
-	Triangle2D second2D(second, matrix, shift); 
-
-	printf("normal is (%lf, %lf, %lf)\n", surf.surf.x, surf.surf.y, surf.surf.z);
-	printf("first trian, point B in start: (%lf, %lf, %lf)\n", first.B.x, first.B.y, first.B.z);
-	printf("first trian, point B in end  : (%lf, %lf, %lf)\n", (first.B - shift).left_matrix_mult(matrix).x, (first.B - shift).left_matrix_mult(matrix).y, (first.B - shift).left_matrix_mult(matrix).z);
-
-	printf("first 2D is : A(%lf, %lf), B(%lf, %lf)\n", first.A.x, first.A.y, first.B.x, first.B.y);
-	printf("second 2D is : A(%lf, %lf), B(%lf, %lf)\n", second.A.x, second.A.y, second.B.x, second.B.y);
-
-	if (Compare2D(first2D, second2D)) {
-		if (DEBUG) printf("2D Triangles intersect: (%ld; %ld)\n", first.id, second.id);
-		first.intersect = true;
-		second.intersect = true;
-	}
-}
-*/
 bool Compare2D (Triangle2D& first, Triangle2D& second) {
 
 	Segment2DTriangle segment_first(first);
@@ -186,4 +126,13 @@ bool check_segments(double first_left, double first_right, double second_left, d
 	}
 	if (LE_double(first_left * first_right, 0) && LE_double(second_left * second_right, 0)) return true;	
 	return false;
+}
+
+Vector cut_quat_to_vec(Quaternion quat) {
+	Vector ret(quat.qvec.x, quat.qvec.y, quat.qvec.z);
+	return ret;
+}
+Vector2D cut_vec_to_2D(Vector vec) {
+	Vector2D ret(vec.x, vec.y);
+	return ret;
 }

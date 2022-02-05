@@ -16,6 +16,7 @@ struct Vector {
 	double z = NAN;
 
 	Vector(double x_ = NAN, double y_ = NAN, double z_ = NAN) : x(x_), y(y_), z(z_) {}
+	
 	bool is_null() const {
 		if (equal_double(x, 0) && equal_double(y, 0) && equal_double(z, 0)) return true;
 		return false;

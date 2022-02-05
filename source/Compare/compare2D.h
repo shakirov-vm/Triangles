@@ -9,6 +9,9 @@ struct Vector2D {
 	Vector2D(Vector ThreeD) : x(ThreeD.x), y(ThreeD.y) {}
 };
 
+Vector cut_quat_to_vec(Quaternion quat);
+Vector2D cut_vec_to_2D(Vector vec);
+
 using Point2D = Vector2D;
 
 struct Triangle2D {
@@ -17,42 +20,10 @@ struct Triangle2D {
 	Point2D C;
 	
 	Triangle2D(Point2D& A_, Point2D& B_, Point2D& C_) : A(A_), B(B_), C(C_) {}
-	/*Triangle2D(Triangle& trian3D, matrix3& matrix, Vector shift) : A((trian3D.A - shift).left_matrix_mult(matrix)), 
-			  B((trian3D.B - shift).left_matrix_mult(matrix)), C((trian3D.C - shift).left_matrix_mult(matrix)) {}*/
-	Triangle2D(Triangle& trian3D, Quaternion& quat, Vector shift) {
-		printf("id is %ld\n", trian3D.id);
-		printf("old A: (%lf, %lf, %lf)\n", (trian3D.A).x, (trian3D.A).y, (trian3D.A).z);
-		printf("old A - shift: (%lf, %lf, %lf)\n", (trian3D.A - shift).x, (trian3D.A - shift).y, (trian3D.A - shift).z);
-		Quaternion new_p = (quat * Quaternion(trian3D.A - shift)) * quat.conjugate();
-		printf("quat * Quaternion(trian3D.A - shift):\n");
-		(quat * Quaternion(trian3D.A - shift)).dump();
-		printf("\nconjugate quaternion:\n"); // Maybe it don't conjugate! ЛОХ
-		(quat.conjugate()).dump();
-		printf("\n");
-		printf("new A: (%lf, %lf, %lf)\n", new_p.qvec.x, new_p.qvec.y, new_p.qvec.z);
-
-		printf("id is %ld\n", trian3D.id);
-		printf("old B: (%lf, %lf, %lf)\n", (trian3D.B).x, (trian3D.B).y, (trian3D.B).z);
-		printf("old B - shift: (%lf, %lf, %lf)\n", (trian3D.B - shift).x, (trian3D.B - shift).y, (trian3D.B - shift).z);
-		new_p = (quat * Quaternion(trian3D.B - shift)) * quat.conjugate();
-		printf("quat * Quaternion(trian3D.B - shift):\n");
-		(quat * Quaternion(trian3D.B - shift)).dump();
-		printf("\nconjugate quaternion:\n"); // Maybe it don't conjugate! ЛОХ
-		(quat.conjugate()).dump();
-		printf("\n");
-		printf("new B: (%lf, %lf, %lf)\n", new_p.qvec.x, new_p.qvec.y, new_p.qvec.z);
-
-		printf("id is %ld\n", trian3D.id);
-		printf("old C: (%lf, %lf, %lf)\n", (trian3D.C).x, (trian3D.C).y, (trian3D.C).z);
-		printf("old C - shift: (%lf, %lf, %lf)\n", (trian3D.C - shift).x, (trian3D.C - shift).y, (trian3D.C - shift).z);
-		new_p = (quat * Quaternion(trian3D.C - shift)) * quat.conjugate();
-		printf("quat * Quaternion(trian3D.C - shift):\n");
-		(quat * Quaternion(trian3D.C - shift)).dump();
-		printf("\nconjugate quaternion:\n"); // Maybe it don't conjugate! ЛОХ
-		(quat.conjugate()).dump();
-		printf("\n");
-		printf("new C: (%lf, %lf, %lf)\n", new_p.qvec.x, new_p.qvec.y, new_p.qvec.z);
-	}
+	Triangle2D(Triangle& trian3D, Quaternion& quat, Vector& shift) : // maybe there move semantic?
+				A(cut_vec_to_2D(cut_quat_to_vec((quat * Quaternion(trian3D.A - shift)) * quat.conjugate()))), 
+			  	B(cut_vec_to_2D(cut_quat_to_vec((quat * Quaternion(trian3D.B - shift)) * quat.conjugate()))),
+			  	C(cut_vec_to_2D(cut_quat_to_vec((quat * Quaternion(trian3D.C - shift)) * quat.conjugate()))) {}
 };
 
 struct Line2D {

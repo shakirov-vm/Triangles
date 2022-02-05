@@ -36,16 +36,9 @@ Vector operator*(double const scal, Vector const &vec) {
 Quaternion operator*(Quaternion const &first, Quaternion const &second) {
 
     Quaternion returned; //we can't do second constructor
-    //printf("\nthis: %lf, %lf, %lf\n")
+//do returned because we have constructor of phi and e vector
     returned.w = first.w * second.w - scalar_mult(first.qvec, second.qvec);
     returned.qvec = second.w * first.qvec + first.w * second.qvec + vector_mult(first.qvec, second.qvec);
-        /*printf("quat mult:\n");
-    first.dump();
-    printf("\n");
-    second.dump();
-    printf("\n");
-    returned.dump();
-    printf("\n");*/
 
     return returned;
 }
@@ -65,6 +58,8 @@ Surface::Surface(Triangle& trian) {
 
     double normalize = 1 / surf.lenght();
 
+    if (D < 0) normalize = -normalize;
+
     surf.x *= normalize;
     surf.y *= normalize;
     surf.z *= normalize;
@@ -82,7 +77,7 @@ Line::Line(Surface& one, Surface& two) {
     double scalar_n_n = scalar_mult(one.surf, two.surf);
     double lenght_1 = one.surf.lenght();
     double lenght_2 = two.surf.lenght();
-    // SIGN OF D??
+
     double a = (two.D * scalar_n_n - one.D * lenght_2 * lenght_2) / (scalar_n_n * scalar_n_n - lenght_2 * lenght_2 * lenght_1 * lenght_1);
     double b = (one.D * scalar_n_n - two.D * lenght_1 * lenght_1) / (scalar_n_n * scalar_n_n - lenght_2 * lenght_2 * lenght_1 * lenght_1);
 
