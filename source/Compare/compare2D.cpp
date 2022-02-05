@@ -4,7 +4,7 @@
 
 
 void handle2D (Triangle& first, Triangle& second, Surface& surf) { 
-
+printf("True 2D\n");
 	Vector old_normal(surf.surf.x, surf.surf.y, surf.surf.z);
 	Vector new_normal(0, 0, 1);
 

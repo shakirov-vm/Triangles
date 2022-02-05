@@ -20,13 +20,38 @@ struct Triangle2D {
 	/*Triangle2D(Triangle& trian3D, matrix3& matrix, Vector shift) : A((trian3D.A - shift).left_matrix_mult(matrix)), 
 			  B((trian3D.B - shift).left_matrix_mult(matrix)), C((trian3D.C - shift).left_matrix_mult(matrix)) {}*/
 	Triangle2D(Triangle& trian3D, Quaternion& quat, Vector shift) {
+		printf("id is %ld\n", trian3D.id);
+		printf("old A: (%lf, %lf, %lf)\n", (trian3D.A).x, (trian3D.A).y, (trian3D.A).z);
 		printf("old A - shift: (%lf, %lf, %lf)\n", (trian3D.A - shift).x, (trian3D.A - shift).y, (trian3D.A - shift).z);
-		Quaternion new_p = quat * Quaternion(trian3D.A - shift) * quat.conjugate();
-		printf("conjugate quaternion:\n"); // Maybe it don't conjugate!
-		quat.conjugate().dump();
+		Quaternion new_p = (quat * Quaternion(trian3D.A - shift)) * quat.conjugate();
+		printf("quat * Quaternion(trian3D.A - shift):\n");
+		(quat * Quaternion(trian3D.A - shift)).dump();
+		printf("\nconjugate quaternion:\n"); // Maybe it don't conjugate! ЛОХ
+		(quat.conjugate()).dump();
 		printf("\n");
 		printf("new A: (%lf, %lf, %lf)\n", new_p.qvec.x, new_p.qvec.y, new_p.qvec.z);
 
+		printf("id is %ld\n", trian3D.id);
+		printf("old B: (%lf, %lf, %lf)\n", (trian3D.B).x, (trian3D.B).y, (trian3D.B).z);
+		printf("old B - shift: (%lf, %lf, %lf)\n", (trian3D.B - shift).x, (trian3D.B - shift).y, (trian3D.B - shift).z);
+		new_p = (quat * Quaternion(trian3D.B - shift)) * quat.conjugate();
+		printf("quat * Quaternion(trian3D.B - shift):\n");
+		(quat * Quaternion(trian3D.B - shift)).dump();
+		printf("\nconjugate quaternion:\n"); // Maybe it don't conjugate! ЛОХ
+		(quat.conjugate()).dump();
+		printf("\n");
+		printf("new B: (%lf, %lf, %lf)\n", new_p.qvec.x, new_p.qvec.y, new_p.qvec.z);
+
+		printf("id is %ld\n", trian3D.id);
+		printf("old C: (%lf, %lf, %lf)\n", (trian3D.C).x, (trian3D.C).y, (trian3D.C).z);
+		printf("old C - shift: (%lf, %lf, %lf)\n", (trian3D.C - shift).x, (trian3D.C - shift).y, (trian3D.C - shift).z);
+		new_p = (quat * Quaternion(trian3D.C - shift)) * quat.conjugate();
+		printf("quat * Quaternion(trian3D.C - shift):\n");
+		(quat * Quaternion(trian3D.C - shift)).dump();
+		printf("\nconjugate quaternion:\n"); // Maybe it don't conjugate! ЛОХ
+		(quat.conjugate()).dump();
+		printf("\n");
+		printf("new C: (%lf, %lf, %lf)\n", new_p.qvec.x, new_p.qvec.y, new_p.qvec.z);
 	}
 };
 

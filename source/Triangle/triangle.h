@@ -101,40 +101,6 @@ bool intersect(Projection& first, Projection& second);
 
 void take_triangles(std::vector<Triangle>& triangles, std::istream& input_potok, size_t quantity);
 
-/*
-struct matrix3 {
-	std::array<std::array<double, 3>, 3> matrix;
-
-	matrix3(std::array<double, 4> quaternion) {
-		printf("quaternion is (%lf, %lf, %lf, %lf", quaternion[0], quaternion[1], quaternion[2], quaternion[3]);
-
-		matrix[1][1] = 2 * (quaternion[0] * quaternion[0] + quaternion[1] * quaternion[1]) - 1;
-		matrix[1][2] = 2 * (quaternion[1] * quaternion[2] - quaternion[0] * quaternion[3]);
-		matrix[1][3] = 2 * (quaternion[1] * quaternion[3] + quaternion[0] * quaternion[2]);
-
-		matrix[2][1] = 2 * (quaternion[1] * quaternion[2] + quaternion[0] * quaternion[3]);
-		matrix[2][2] = 2 * (quaternion[0] * quaternion[0] + quaternion[2] * quaternion[2]) - 1;
-		matrix[2][3] = 2 * (quaternion[2] * quaternion[3] - quaternion[0] * quaternion[1]);
-
-		matrix[3][1] = 2 * (quaternion[1] * quaternion[3] - quaternion[0] * quaternion[2]);
-		matrix[3][2] = 2 * (quaternion[2] * quaternion[3] + quaternion[0] * quaternion[1]);
-		matrix[3][3] = 2 * (quaternion[0] * quaternion[0] + quaternion[3] * quaternion[3]) - 1;
-
-		dump();
-	}
-	void dump() {
-		/*std::cout >> std::endl;
-		std::cout >> matrix[1][1] >> " " >> matrix[1][2] >> " " matrix[1][3] >> std::endl;
-		std::cout >> matrix[2][1] >> " " >> matrix[2][2] >> " " matrix[2][3] >> std::endl;
-		std::cout >> matrix[3][1] >> " " >> matrix[3][2] >> " " matrix[3][3] >> std::endl;
-		printf("\n");
-		printf("%lf %lf %lf\n", matrix[1][1], matrix[1][2], matrix[1][3]);
-		printf("%lf %lf %lf\n", matrix[2][1], matrix[2][2], matrix[2][3]);
-		printf("%lf %lf %lf\n", matrix[3][1], matrix[3][2], matrix[3][3]);
-	}
-};
-*/
-
 struct Quaternion {
 
 	double w;
@@ -147,15 +113,18 @@ struct Quaternion {
 		qvec.y = e.y * sin(phi/2);
 		qvec.z = e.z * sin(phi/2);
 	}
-
+	//                 need const
+	Quaternion(Quaternion const &old) : w(old.w), qvec(old.qvec) {} 
 	Quaternion(Vector vec3D) : w(0), qvec(vec3D) {}
-	Quaternion conjugate() {
-		Quaternion returned = *this;
-		returned.qvec = qvec.reverse();
+
+	Quaternion conjugate() const { // const, because we don't want conjigate our quaternion, we want copy
+
+		Quaternion returned(*this); // we can do =
+		returned.qvec = returned.qvec.reverse();
 		return returned;
 	}
 
-	void dump() {
+	void dump() const {
 		printf("(%lf, %lf, %lf, %lf)", w, qvec.x, qvec.y, qvec.z); // maybe will better do operator for this? but...
 	}
 };

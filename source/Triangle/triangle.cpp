@@ -36,8 +36,16 @@ Vector operator*(double const scal, Vector const &vec) {
 Quaternion operator*(Quaternion const &first, Quaternion const &second) {
 
     Quaternion returned; //we can't do second constructor
-    returned.w = first.w + second.w - scalar_mult(first.qvec, second.qvec);
+    //printf("\nthis: %lf, %lf, %lf\n")
+    returned.w = first.w * second.w - scalar_mult(first.qvec, second.qvec);
     returned.qvec = second.w * first.qvec + first.w * second.qvec + vector_mult(first.qvec, second.qvec);
+        /*printf("quat mult:\n");
+    first.dump();
+    printf("\n");
+    second.dump();
+    printf("\n");
+    returned.dump();
+    printf("\n");*/
 
     return returned;
 }
