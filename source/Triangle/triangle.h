@@ -38,6 +38,7 @@ struct Vector {
 	}
 };
 
+bool operator==(Vector const &first, Vector const &second);
 Vector operator+(Vector const &first, Vector const &second);
 Vector operator-(Vector const &first, Vector const &second);
 double scalar_mult(Vector const &first, Vector const &second);
@@ -80,6 +81,29 @@ struct Line {
 	Line(Surface& one, Surface& two);
 	Line(Point& one, Point& two);
 };
+
+struct Segment {
+	Point P1;
+	Point P2;
+
+	Segment(Triangle& trian) { // Don't work if all 3 is the same
+		if (trian.A == trian.B) {
+			P1 = trian.A;
+			P2 = trian.C;
+		}
+		if (trian.A == trian.C) {
+			P1 = trian.A;
+			P2 = trian.B;
+		}
+		if (trian.B == trian.C) {
+			P1 = trian.A;
+			P2 = trian.C;
+		}
+	}
+	bool in_segment(Point P) {
+		
+	}
+}
 
 struct SignDist {
 	double dist_V_0;

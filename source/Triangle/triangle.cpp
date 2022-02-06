@@ -31,6 +31,9 @@ Vector operator*(Vector const &vec, double const scal) {
 Vector operator*(double const scal, Vector const &vec) {
     return Vector(scal * vec.x, scal * vec.y, scal * vec.z);
 }
+bool operator==(Vector const &first, Vector const &second) {
+    return (equal_double(first.x, second.x) && equal_double(first.y, second.y) && equal_double(first.z, second.z))
+}
 
 
 Quaternion operator*(Quaternion const &first, Quaternion const &second) {

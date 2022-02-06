@@ -8,7 +8,7 @@ void handle2D (Triangle& first, Triangle& second, Surface& surf) {
 	Vector old_normal(surf.surf.x, surf.surf.y, surf.surf.z);
 	Vector new_normal(0, 0, 1);
 
-	printf("old normal is (%lf, %lf, %lf)\n", surf.surf.x, surf.surf.y, surf.surf.z);
+	//printf("old normal is (%lf, %lf, %lf)\n", surf.surf.x, surf.surf.y, surf.surf.z);
 
 	double normal_mult = old_normal.lenght() * new_normal.lenght();
 
