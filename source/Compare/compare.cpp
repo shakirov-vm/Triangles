@@ -16,16 +16,42 @@ void compare_triangles (Triangle& zero, Triangle& first) {
 	SignDist V_0(first_surf, zero);
 	if (less_double(std::max({V_0.dist_V_0, V_0.dist_V_1, V_0.dist_V_2}), 0) || great_double(std::min({V_0.dist_V_0, V_0.dist_V_1, V_0.dist_V_2}), 0)) return; //false
 	
+	if (is_point(zero) && is_point(first)) {
+		handle_2_point(zero, first);
+		return;
+	} 
+
+	if (is_point(zero) && !is_point(first)) {
+		if (is_null(first_surf.surf)) {
+			handle_seg_n_point(first, zero);
+			return;
+		}
+
+		handle_seg_n_trian(zero, first, first_surf);
+		return;
+	}
+
+	if (!is_point(zero) && is_point(first)) {
+		if (is_null(zero_surf.surf)) {
+			handle_seg_n_point(zero, first);
+			return;
+		}
+
+		handle_seg_n_trian(first, zero, zero_surf);
+		return;
+	}
+
+	if ((is_null(first_surf.surf) && is_null(zero_surf.surf))) {
+		handle_2_seg(zero, first);
+		return;
+	}
+
 	if ((is_null(zero_surf.surf) && !is_null(first_surf.surf))) {
 		handle_seg_n_trian(zero, first);
 		return;
 	}
 	if ((is_null(first_surf.surf) && !is_null(zero_surf.surf))) {
 		handle_seg_n_trian(first, zero);
-		return;
-	}
-	if ((is_null(first_surf.surf) && is_null(zero_surf.surf))) {
-		handle_2_seg(zero, first);
 		return;
 	}
 
@@ -64,7 +90,23 @@ void handle_seg_n_trian(Triangle& segment_tr, Triangle& trian, Surface& trian_su
 	Segment segment(segment_tr);
 	if (equal_double(scalar_mult(segment.P1 - segment.P2, trian_surf.surf), 0)) { // Parallel
 		if (equal_double(trian_surf.surf.x * (P1.x - P2.x) + trian_surf.surf.y * (P1.y - P2.y) + trian_surf.surf.z * (P1.z - P2.z), 0)) {
-//??????????????????????????????????????????????????????
+			
+			if (intersect_segments(segment, Segment(trian.A, trian.B))) {
+				segment_tr.intersect = true;
+				trian.intersect = true;
+			}
+			if (intersect_segments(segment, Segment(trian.A, trian.C))) {
+				segment_tr.intersect = true;
+				trian.intersect = true;
+			}
+			if (intersect_segments(segment, Segment(trian.C, trian.B))) {
+				segment_tr.intersect = true;
+				trian.intersect = true;
+			}
+			if (in_triangle(segment.P1)) {
+				segment_tr.intersect = true;
+				trian.intersect = true;
+			}
 		}
 		else return;
 	}
@@ -74,17 +116,9 @@ void handle_seg_n_trian(Triangle& segment_tr, Triangle& trian, Surface& trian_su
 
 	if (mu < 0 || mu > 1) return; // intersect point out of segment
 
-	Point intersect_point = P1 + mu * (P2 - P1);
-
-	Vector AP = (trian.A - P) / (trian.A - P).lenght();
-	Vector BP = (trian.B - P) / (trian.B - P).lenght();
-	Vector CP = (trian.C - P) / (trian.C - P).lenght();
-
-	double alphaC = acos(scalar_mult(AP, BP));
-	double alphaB = acos(scalar_mult(BP, CP));
-	double alphaA = acos(scalar_mult(CP, AP)); //?
-																									// It's, make const
-	if (equal_double(acos(scalar_mult(AP, BP)) + acos(scalar_mult(BP, CP)) + acos(scalar_mult(CP, AP)), 3.1415926535)) {
+	Point P = P1 + mu * (P2 - P1);
+																			
+	if (trian.in_triangle(P)) {
 		segment_tr.intersect = true;
 		trian.intersect = true;
 	}	
@@ -99,43 +133,50 @@ void handle_2_seg(Triangle& zero, Triangle& first) {
 
 	if (!(zero_surf.surf == first_surf.surf)) return; // crossing straight lines
 
+// Hope that intersect correctly work for parallel and coinciding 
 
-	
-}
-
-void intersect_segments() {
-
-}
-
-double sign_dist_3D(Point& point, Segment& seg) {
-	return (vector_mult(seg.P1 - seg.P2, point - seg.P1))  
-}
-
-bool check_segments(double first_left, double first_right, double second_left, double second_right, Segment2D& first, Segment2D& second) {
-	if (equal_double(first_left, 0) && equal_double(first_right, 0) && equal_double(second_left, 0) && equal_double(second_right, 0)) {
-
-		if (!equal_double(first.start.x, first.end.x)) { 
-			first_left = first.start.x;
-			first_right = first.end.x;
-
-			second_left = second.start.x;
-			second_right = second.end.x;
-		} else { 
-			first_left = first.start.y;
-			first_right = first.end.y;
-
-			second_left = second.start.y;
-			second_right = second.end.y;
-		}
-
-		if (great_double(first_left, first_right)) std::swap(first_left, first_right);
-		if (great_double(second_left, second_right)) std::swap(second_left, second_right);
-		
-		if (less_double(first_right, second_left)) return false;
-    	if (less_double(second_right, first_left)) return false;
-
-		return true;
+	if (intersect_segments(zero_segment, first_segment)) {
+		zero.intersect = true;
+		first.intersect = true;
 	}
-	if (LE_double(first_left * first_right, 0) && LE_double(second_left * second_right, 0)) return true;	
+}
+
+void handle_2_point(Triangle& P1, Triangle& P2) {
+	if (P1.A == P2.A) {
+		P1.intersect = true;
+		P2.intersect = true;
+	}
+}
+
+void handle_seg_n_point(Triangle& segment_tr, Triangle& point_tr) {
+	
+	Segment segment(segment_tr);
+	Point point = point_tr.A;
+
+	if (segment.in_segment(point)) {
+		segment_tr.intersect = true;
+		point_tr.intersect = true;
+	}
+}
+
+void handle_trian_n_point(Triangle& trian, Triangle& point_tr) {
+
+	Point point = point_tr.A;
+}
+
+bool is_point(Triangle& trian) {
+	return(trian.A == trian.B && trian.A == trian.C);
+}
+
+bool intersect_segments(Segment &first, Segment &second) {
+	
+	if (!intersect(Projection(first.P1.x, first.P2.x), Projection(second.P1.x, second.P2.x))) return false;
+	if (!intersect(Projection(first.P1.y, first.P2.y), Projection(second.P1.y, second.P2.y))) return false;
+	if (!intersect(Projection(first.P1.z, first.P2.z), Projection(second.P1.z, second.P2.z))) return false;
+
+	if ((scalar_mult(vector_mult(second.P1 - first.P1, first.P2 - first.P1), vector_mult(second.P2 - first.P1, first.P2 - first.P1)) <= 0) 
+	 && (scalar_mult(vector_mult(first.P1 - second.P1, second.P2 - second.P1), vector_mult(first.P2 - second.P1, second.P2 - second.P1)) <= 0)) {
+		return true;
+	}	
 	return false;
 }

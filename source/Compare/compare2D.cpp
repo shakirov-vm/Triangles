@@ -136,3 +136,7 @@ Vector2D cut_vec_to_2D(Vector vec) {
 	Vector2D ret(vec.x, vec.y);
 	return ret;
 }
+
+bool intersect_segments(Segment &first, Segment &second) {
+	
+}

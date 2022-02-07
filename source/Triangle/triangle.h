@@ -65,6 +65,17 @@ struct Triangle {
 	Component x_proj;
 
 	void get_x_projection(); 
+	bool in_triangle(Point P) {
+
+		Vector AP = (A - P) / (trian.A - P).lenght();
+		Vector BP = (B - P) / (trian.B - P).lenght();
+		Vector CP = (C - P) / (trian.C - P).lenght();
+
+		const double pi = 3.1415926535;
+																					// maybe AP, CP??	
+		if (equal_double(acos(scalar_mult(AP, BP)) + acos(scalar_mult(BP, CP)) + acos(scalar_mult(CP, AP)), pi)) return true;
+		return false;
+	}
 };
 
 struct Surface {
@@ -100,8 +111,19 @@ struct Segment {
 			P2 = trian.C;
 		}
 	}
-	bool in_segment(Point P) {
+	bool in_segment(Point P) { // We think that segment isn't point
 		
+		double dist = vector_mult(P1 - P2, P - P1).lenght() / (P1 - P2).lenght();
+		if (!equal_double(dist, 0)) return false;
+
+		double mu;
+		if (!equal_double(P1.x - P2.x, 0)) mu = (P1.x - P.x) / (P1.x - P2.x);
+		else if (!equal_double(P1.y - P2.y, 0)) mu = (P1.y - P.y) / (P1.y - P2.y);
+		else (!equal_double(P1.z - P2.z, 0)) mu = (P1.z - P.z) / (P1.z - P2.z); 
+	
+		if (mu < 0 || mu > 1) return false;
+
+		return true;
 	}
 }
 
