@@ -8,53 +8,68 @@
  
 void compare_triangles (Triangle& zero, Triangle& first) {
 
-	Surface zero_surf(zero);
-	SignDist V_1(zero_surf, first);
-	if (less_double(std::max({V_1.dist_V_0, V_1.dist_V_1, V_1.dist_V_2}), 0) || great_double(std::min({V_1.dist_V_0, V_1.dist_V_1, V_1.dist_V_2}), 0)) return; //false
+	zero.dump();
+	first.dump();
 
-	Surface first_surf(first);
-	SignDist V_0(first_surf, zero);
-	if (less_double(std::max({V_0.dist_V_0, V_0.dist_V_1, V_0.dist_V_2}), 0) || great_double(std::min({V_0.dist_V_0, V_0.dist_V_1, V_0.dist_V_2}), 0)) return; //false
-	
 	if (is_point(zero) && is_point(first)) {
+		printf("2 points\n");
 		handle_2_point(zero, first);
 		return;
 	} 
 
 	if (is_point(zero) && !is_point(first)) {
-		if (first_surf.surf.is_null()) {
+		if (is_segment(first)) {
+			printf("point and segment\n");
 			handle_seg_n_point(first, zero);
 			return;
 		}
-
-		handle_seg_n_trian(zero, first, first_surf);
+		printf("point and triangle\n");
+		handle_trian_n_point(first, zero);
 		return;
 	}
 
 	if (!is_point(zero) && is_point(first)) {
-		if (zero_surf.surf.is_null()) {
+		if (is_segment(zero)) {
+			printf("point and segment\n");
 			handle_seg_n_point(zero, first);
 			return;
 		}
-
-		handle_seg_n_trian(first, zero, zero_surf);
+		printf("point and triangle\n");
+		handle_trian_n_point(zero, first);
 		return;
 	}
 
-	if (first_surf.surf.is_null() && zero_surf.surf.is_null()) {
+	if (is_segment(zero) && is_segment(first)) {
+		printf("2 segments\n");
 		handle_2_seg(zero, first);
 		return;
 	}
 
-	if (zero_surf.surf.is_null() && !first_surf.surf.is_null()) {
+	Surface zero_surf(zero);
+	Surface first_surf(first);
+
+	printf("%ld surface: (%lf, %lf, %lf)\n", zero.id, zero_surf.surf.x, zero_surf.surf.y, zero_surf.surf.z);
+	printf("%ld surface: (%lf, %lf, %lf)\n", first.id, first_surf.surf.x, first_surf.surf.y, first_surf.surf.z);
+
+	if (is_segment(zero) && !is_segment(first)) {
+		printf("segment and triangle\n");
 		handle_seg_n_trian(zero, first, first_surf);
 		return;
 	}
-	if (first_surf.surf.is_null() && !zero_surf.surf.is_null()) {
+	if (is_segment(first) && !is_segment(zero)) {
+		printf("segment and triangle\n");
 		handle_seg_n_trian(first, zero, zero_surf);
 		return;
 	}
+printf("after degenerate\n");
 
+	SignDist V_1(zero_surf, first);
+	V_1.dump();
+	if (less_double(std::max({V_1.dist_V_0, V_1.dist_V_1, V_1.dist_V_2}), 0) || great_double(std::min({V_1.dist_V_0, V_1.dist_V_1, V_1.dist_V_2}), 0)) return; //false
+	
+	SignDist V_0(first_surf, zero);
+	if (less_double(std::max({V_0.dist_V_0, V_0.dist_V_1, V_0.dist_V_2}), 0) || great_double(std::min({V_0.dist_V_0, V_0.dist_V_1, V_0.dist_V_2}), 0)) return; //false
+	
 	if (vector_mult(zero_surf.surf, first_surf.surf).is_null()) { 
 		
 		if (!equal_double(zero_surf.D, first_surf.D)) return; // false
@@ -164,8 +179,13 @@ void handle_trian_n_point(Triangle& trian, Triangle& point_tr) {
 	Point point = point_tr.A;
 }
 
-bool is_point(Triangle& trian) {
+bool is_point(Triangle const &trian) {
 	return(trian.A == trian.B && trian.A == trian.C);
+}
+bool is_segment(Triangle const &trian) { // is it the best way? we can check any phi, if phi equal pi => segment
+	if (is_point(trian)) return false;
+	if (vector_mult(trian.A - trian.B, trian.A - trian.C).is_null()) return true;
+	return false;
 }
 
 bool intersect_segments(Segment const &first, Segment const &second) {

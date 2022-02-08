@@ -82,6 +82,9 @@ struct Triangle {
 		if (equal_double(acos(scalar_mult(AP, BP)) + acos(scalar_mult(BP, CP)) + acos(scalar_mult(CP, AP)), pi)) return true;
 		return false;
 	}
+	void dump() const {
+		printf("Triangle %ld: A(%lf, %lf, %lf), B(%lf, %lf, %lf), C(%lf, %lf, %lf)\n", id, A.x, A.y, A.z, B.x, B.y, B.z, C.x, C.y, C.z);
+	}
 };
 
 struct Surface {
@@ -102,8 +105,14 @@ struct Line {
 struct Segment {
 	Point P1;
 	Point P2;
+//This isn't true
+	Segment(Triangle const &trian) { // we think that triangle is segment
 
-	Segment(Triangle const &trian) { // Don't work if all 3 is the same
+	/*	if (!is_null(vector_mult(trian.A - trian.B, Vector(1, 0, 0)))) {
+			if (trian.A.x > trian.B.x)
+		}*/
+
+
 		if (trian.A == trian.B) {
 			P1 = trian.A;
 			P2 = trian.C;
@@ -141,6 +150,9 @@ struct SignDist {
 	double dist_V_2;
 
 	SignDist (Surface& surf, Triangle& trian);
+	void dump() {
+		printf("SignDist: %lf, %lf, %lf\n", dist_V_0, dist_V_1, dist_V_2);
+	}
 };
 
 struct Projection {
