@@ -32,7 +32,7 @@ Vector operator*(double const scal, Vector const &vec) {
     return Vector(scal * vec.x, scal * vec.y, scal * vec.z);
 }
 bool operator==(Vector const &first, Vector const &second) {
-    return (equal_double(first.x, second.x) && equal_double(first.y, second.y) && equal_double(first.z, second.z))
+    return (equal_double(first.x, second.x) && equal_double(first.y, second.y) && equal_double(first.z, second.z));
 }
 
 
@@ -51,7 +51,7 @@ void Triangle::get_x_projection() {
     x_proj.right = std::max(std::max(A.x, B.x), C.x); 
 }
 //Surface
-Surface::Surface(Triangle& trian) { 
+Surface::Surface(Triangle const &trian) { 
     // first - A, second - B, third - C
     surf.x = trian.A.y * (trian.B.z - trian.C.z) + trian.B.y * (trian.C.z - trian.A.z) + trian.C.y * (trian.A.z - trian.B.z);
     surf.y = trian.A.x * (trian.C.z - trian.B.z) + trian.B.x * (trian.A.z - trian.C.z) + trian.C.x * (trian.B.z - trian.A.z);
@@ -144,7 +144,7 @@ Projection::Projection(Line& main, Triangle& trian, SignDist& sign) {
 
     if (ULTRA_DEBUG) printf("Projection: (%lf, %lf)\n", left, right);
 }
-bool intersect(Projection& first, Projection& second) {
+bool intersect(Projection const &first, Projection const &second) {
     if (ULTRA_DEBUG) printf("Intersect projections: one - (%lf, %lf), two - (%lf, %lf)\n", first.left, first.right, second.left, second.right);
     
     if (equal_double(first.right, second.left)) return true;

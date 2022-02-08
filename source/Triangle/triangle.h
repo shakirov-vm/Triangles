@@ -1,5 +1,8 @@
 #pragma once
-
+/*
+#include <limits>
+size_t maxvalue = std::numeric_limits<size_t>::max(); //?
+*/
 #include <vector>
 #include <string>
 #include <array>
@@ -64,12 +67,15 @@ struct Triangle {
 
 	Component x_proj;
 
-	void get_x_projection(); 
-	bool in_triangle(Point P) {
+	Triangle() = default;
+	Triangle(Point const &A_old, Point const &B_old, Point const &C_old) : intersect(false), A(A_old), B(B_old), C(C_old), id(0xDEADBEEF) {}
 
-		Vector AP = (A - P) / (trian.A - P).lenght();
-		Vector BP = (B - P) / (trian.B - P).lenght();
-		Vector CP = (C - P) / (trian.C - P).lenght();
+	void get_x_projection(); 
+	bool in_triangle(Point const &P) {
+
+		Vector AP = (A - P) * (1 / (A - P).lenght());
+		Vector BP = (B - P) * (1 / (B - P).lenght());
+		Vector CP = (C - P) * (1 / (C - P).lenght());
 
 		const double pi = 3.1415926535;
 																					// maybe AP, CP??	
@@ -82,7 +88,7 @@ struct Surface {
 	Vector surf;
 	double D;
 
-	Surface(Triangle& trian);
+	Surface(Triangle const &trian);
 };
 
 struct Line {
@@ -97,7 +103,7 @@ struct Segment {
 	Point P1;
 	Point P2;
 
-	Segment(Triangle& trian) { // Don't work if all 3 is the same
+	Segment(Triangle const &trian) { // Don't work if all 3 is the same
 		if (trian.A == trian.B) {
 			P1 = trian.A;
 			P2 = trian.C;
@@ -111,21 +117,23 @@ struct Segment {
 			P2 = trian.C;
 		}
 	}
+	Segment(Point const &first, Point const &second) : P1(first), P2(second) {}
+
 	bool in_segment(Point P) { // We think that segment isn't point
 		
 		double dist = vector_mult(P1 - P2, P - P1).lenght() / (P1 - P2).lenght();
 		if (!equal_double(dist, 0)) return false;
 
 		double mu;
-		if (!equal_double(P1.x - P2.x, 0)) mu = (P1.x - P.x) / (P1.x - P2.x);
+			 if (!equal_double(P1.x - P2.x, 0)) mu = (P1.x - P.x) / (P1.x - P2.x);
 		else if (!equal_double(P1.y - P2.y, 0)) mu = (P1.y - P.y) / (P1.y - P2.y);
-		else (!equal_double(P1.z - P2.z, 0)) mu = (P1.z - P.z) / (P1.z - P2.z); 
+		else if (!equal_double(P1.z - P2.z, 0)) mu = (P1.z - P.z) / (P1.z - P2.z); 
 	
 		if (mu < 0 || mu > 1) return false;
 
 		return true;
 	}
-}
+};
 
 struct SignDist {
 	double dist_V_0;
@@ -144,7 +152,7 @@ struct Projection {
 	Projection(Line& main, Triangle& trian, SignDist& sign);
 };
 
-bool intersect(Projection& first, Projection& second);
+bool intersect(Projection const &first, Projection const &second);
 
 void take_triangles(std::vector<Triangle>& triangles, std::istream& input_potok, size_t quantity);
 

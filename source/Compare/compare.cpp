@@ -22,7 +22,7 @@ void compare_triangles (Triangle& zero, Triangle& first) {
 	} 
 
 	if (is_point(zero) && !is_point(first)) {
-		if (is_null(first_surf.surf)) {
+		if (first_surf.surf.is_null()) {
 			handle_seg_n_point(first, zero);
 			return;
 		}
@@ -32,7 +32,7 @@ void compare_triangles (Triangle& zero, Triangle& first) {
 	}
 
 	if (!is_point(zero) && is_point(first)) {
-		if (is_null(zero_surf.surf)) {
+		if (zero_surf.surf.is_null()) {
 			handle_seg_n_point(zero, first);
 			return;
 		}
@@ -41,17 +41,17 @@ void compare_triangles (Triangle& zero, Triangle& first) {
 		return;
 	}
 
-	if ((is_null(first_surf.surf) && is_null(zero_surf.surf))) {
+	if (first_surf.surf.is_null() && zero_surf.surf.is_null()) {
 		handle_2_seg(zero, first);
 		return;
 	}
 
-	if ((is_null(zero_surf.surf) && !is_null(first_surf.surf))) {
-		handle_seg_n_trian(zero, first);
+	if (zero_surf.surf.is_null() && !first_surf.surf.is_null()) {
+		handle_seg_n_trian(zero, first, first_surf);
 		return;
 	}
-	if ((is_null(first_surf.surf) && !is_null(zero_surf.surf))) {
-		handle_seg_n_trian(first, zero);
+	if (first_surf.surf.is_null() && !zero_surf.surf.is_null()) {
+		handle_seg_n_trian(first, zero, zero_surf);
 		return;
 	}
 
@@ -79,7 +79,7 @@ void compare_triangles (Triangle& zero, Triangle& first) {
 	return;
 }
 
-void reverse_normal (Surface& surf) {
+void reverse_normal(Surface& surf) {
 	surf.surf.x = -surf.surf.x;
 	surf.surf.y = -surf.surf.y;
 	surf.surf.z = -surf.surf.z;
@@ -89,7 +89,7 @@ void handle_seg_n_trian(Triangle& segment_tr, Triangle& trian, Surface& trian_su
 
 	Segment segment(segment_tr);
 	if (equal_double(scalar_mult(segment.P1 - segment.P2, trian_surf.surf), 0)) { // Parallel
-		if (equal_double(trian_surf.surf.x * (P1.x - P2.x) + trian_surf.surf.y * (P1.y - P2.y) + trian_surf.surf.z * (P1.z - P2.z), 0)) {
+		if (equal_double(trian_surf.surf.x * (segment.P1.x - segment.P2.x) + trian_surf.surf.y * (segment.P1.y - segment.P2.y) + trian_surf.surf.z * (segment.P1.z - segment.P2.z), 0)) {
 			
 			if (intersect_segments(segment, Segment(trian.A, trian.B))) {
 				segment_tr.intersect = true;
@@ -103,7 +103,7 @@ void handle_seg_n_trian(Triangle& segment_tr, Triangle& trian, Surface& trian_su
 				segment_tr.intersect = true;
 				trian.intersect = true;
 			}
-			if (in_triangle(segment.P1)) {
+			if (trian.in_triangle(segment.P1)) {
 				segment_tr.intersect = true;
 				trian.intersect = true;
 			}
@@ -111,12 +111,12 @@ void handle_seg_n_trian(Triangle& segment_tr, Triangle& trian, Surface& trian_su
 		else return;
 	}
 	//Not parallel
-	double mu = (D + trian_surf.surf.x * P1.x + trian_surf.surf.y * P1.y + trian_surf.surf.z * P1.z) / 
-					(trian_surf.surf.x * (P1.x - P2.x) + trian_surf.surf.y * (P1.y - P2.y) + trian_surf.surf.z * (P1.z - P2.z));
+	double mu = (trian_surf.D + trian_surf.surf.x * segment.P1.x + trian_surf.surf.y * segment.P1.y + trian_surf.surf.z * segment.P1.z) / 
+					(trian_surf.surf.x * (segment.P1.x - segment.P2.x) + trian_surf.surf.y * (segment.P1.y - segment.P2.y) + trian_surf.surf.z * (segment.P1.z - segment.P2.z));
 
 	if (mu < 0 || mu > 1) return; // intersect point out of segment
 
-	Point P = P1 + mu * (P2 - P1);
+	Point P = segment.P1 + mu * (segment.P2 - segment.P1);
 																			
 	if (trian.in_triangle(P)) {
 		segment_tr.intersect = true;
@@ -128,8 +128,8 @@ void handle_2_seg(Triangle& zero, Triangle& first) {
 	Segment zero_segment(zero);
 	Segment first_segment(first);
 
-	Surface zero_surf((zero_segment.P1, zero_segment.P2, first_segment.P1));
-	Surface first_surf((zero_segment.P1, zero_segment.P2, first_segment.P2));
+	Surface zero_surf(Triangle(zero_segment.P1, zero_segment.P2, first_segment.P1));
+	Surface first_surf(Triangle(zero_segment.P1, zero_segment.P2, first_segment.P2));
 
 	if (!(zero_surf.surf == first_surf.surf)) return; // crossing straight lines
 
@@ -168,7 +168,7 @@ bool is_point(Triangle& trian) {
 	return(trian.A == trian.B && trian.A == trian.C);
 }
 
-bool intersect_segments(Segment &first, Segment &second) {
+bool intersect_segments(Segment const &first, Segment const &second) {
 	
 	if (!intersect(Projection(first.P1.x, first.P2.x), Projection(second.P1.x, second.P2.x))) return false;
 	if (!intersect(Projection(first.P1.y, first.P2.y), Projection(second.P1.y, second.P2.y))) return false;
