@@ -73,13 +73,13 @@ struct Triangle {
 	void get_x_projection(); 
 	bool in_triangle(Point const &P) {
 
-		Vector AP = (A - P) * (1 / (A - P).lenght());
-		Vector BP = (B - P) * (1 / (B - P).lenght());
-		Vector CP = (C - P) * (1 / (C - P).lenght());
+		Vector PA = (P - A) * (1 / (P - A).lenght());
+		Vector PB = (P - B) * (1 / (P - B).lenght());
+		Vector PC = (P - C) * (1 / (P - C).lenght());
 
 		const double pi = 3.1415926535;
-																					// maybe AP, CP??	
-		if (equal_double(acos(scalar_mult(AP, BP)) + acos(scalar_mult(BP, CP)) + acos(scalar_mult(CP, AP)), pi)) return true;
+											
+		if (equal_double(acos(scalar_mult(PA, PB)) + acos(scalar_mult(PB, PC)) + acos(scalar_mult(PC, PA)), 2 * pi)) return true;
 		return false;
 	}
 	void dump() const {
@@ -107,23 +107,37 @@ struct Segment {
 	Point P2;
 //This isn't true
 	Segment(Triangle const &trian) { // we think that triangle is segment
+		// if triangle isn't segment, we must check that scalar_mult is lenght_1 * lenght_2
 
-	/*	if (!is_null(vector_mult(trian.A - trian.B, Vector(1, 0, 0)))) {
-			if (trian.A.x > trian.B.x)
-		}*/
-
-
+		if (less_double(scalar_mult(trian.B - trian.A, trian.C - trian.A), 0)) {
+			P1 = trian.B;
+			P2 = trian.C;
+			return;
+		}
+		if (less_double(scalar_mult(trian.A - trian.B, trian.C - trian.B), 0)) {
+			P1 = trian.A;
+			P2 = trian.C;
+			return;
+		}
+		if (less_double(scalar_mult(trian.A - trian.C, trian.B - trian.C), 0)) {
+			P1 = trian.A;
+			P2 = trian.B;
+			return;
+		}
 		if (trian.A == trian.B) {
 			P1 = trian.A;
 			P2 = trian.C;
+			return;
 		}
 		if (trian.A == trian.C) {
 			P1 = trian.A;
 			P2 = trian.B;
+			return;
 		}
 		if (trian.B == trian.C) {
 			P1 = trian.A;
 			P2 = trian.C;
+			return;
 		}
 	}
 	Segment(Point const &first, Point const &second) : P1(first), P2(second) {}

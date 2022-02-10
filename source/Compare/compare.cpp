@@ -8,39 +8,39 @@
  
 void compare_triangles (Triangle& zero, Triangle& first) {
 
-	zero.dump();
-	first.dump();
+	if (DEBUG) zero.dump();
+	if (DEBUG) first.dump();
 
 	if (is_point(zero) && is_point(first)) {
-		printf("2 points\n");
+		if (DEBUG) printf("2 points\n");
 		handle_2_point(zero, first);
 		return;
 	} 
 
 	if (is_point(zero) && !is_point(first)) {
 		if (is_segment(first)) {
-			printf("point and segment\n");
+			if (DEBUG) printf("point and segment\n");
 			handle_seg_n_point(first, zero);
 			return;
 		}
-		printf("point and triangle\n");
+		if (DEBUG) printf("point and triangle\n");
 		handle_trian_n_point(first, zero);
 		return;
 	}
 
 	if (!is_point(zero) && is_point(first)) {
 		if (is_segment(zero)) {
-			printf("point and segment\n");
+			if (DEBUG) printf("point and segment\n");
 			handle_seg_n_point(zero, first);
 			return;
 		}
-		printf("point and triangle\n");
+		if (DEBUG) printf("point and triangle\n");
 		handle_trian_n_point(zero, first);
 		return;
 	}
 
 	if (is_segment(zero) && is_segment(first)) {
-		printf("2 segments\n");
+		if (DEBUG) printf("2 segments\n");
 		handle_2_seg(zero, first);
 		return;
 	}
@@ -48,23 +48,22 @@ void compare_triangles (Triangle& zero, Triangle& first) {
 	Surface zero_surf(zero);
 	Surface first_surf(first);
 
-	printf("%ld surface: (%lf, %lf, %lf)\n", zero.id, zero_surf.surf.x, zero_surf.surf.y, zero_surf.surf.z);
-	printf("%ld surface: (%lf, %lf, %lf)\n", first.id, first_surf.surf.x, first_surf.surf.y, first_surf.surf.z);
+	if (DEBUG) printf("%ld surface: (%lf, %lf, %lf)\n", zero.id, zero_surf.surf.x, zero_surf.surf.y, zero_surf.surf.z);
+	if (DEBUG) printf("%ld surface: (%lf, %lf, %lf)\n", first.id, first_surf.surf.x, first_surf.surf.y, first_surf.surf.z);
 
 	if (is_segment(zero) && !is_segment(first)) {
-		printf("segment and triangle\n");
+		if (DEBUG) printf("segment and triangle\n");
 		handle_seg_n_trian(zero, first, first_surf);
 		return;
 	}
 	if (is_segment(first) && !is_segment(zero)) {
-		printf("segment and triangle\n");
+		if (DEBUG) printf("segment and triangle\n");
 		handle_seg_n_trian(first, zero, zero_surf);
 		return;
 	}
-printf("after degenerate\n");
+	if (DEBUG) printf("after degenerate\n");
 
 	SignDist V_1(zero_surf, first);
-	V_1.dump();
 	if (less_double(std::max({V_1.dist_V_0, V_1.dist_V_1, V_1.dist_V_2}), 0) || great_double(std::min({V_1.dist_V_0, V_1.dist_V_1, V_1.dist_V_2}), 0)) return; //false
 	
 	SignDist V_0(first_surf, zero);
@@ -132,7 +131,7 @@ void handle_seg_n_trian(Triangle& segment_tr, Triangle& trian, Surface& trian_su
 	if (mu < 0 || mu > 1) return; // intersect point out of segment
 
 	Point P = segment.P1 + mu * (segment.P2 - segment.P1);
-																			
+
 	if (trian.in_triangle(P)) {
 		segment_tr.intersect = true;
 		trian.intersect = true;
@@ -147,8 +146,6 @@ void handle_2_seg(Triangle& zero, Triangle& first) {
 	Surface first_surf(Triangle(zero_segment.P1, zero_segment.P2, first_segment.P2));
 
 	if (!(zero_surf.surf == first_surf.surf)) return; // crossing straight lines
-
-// Hope that intersect correctly work for parallel and coinciding 
 
 	if (intersect_segments(zero_segment, first_segment)) {
 		zero.intersect = true;

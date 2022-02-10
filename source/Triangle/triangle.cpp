@@ -155,27 +155,6 @@ bool intersect(Projection const &first, Projection const &second) {
 
     return true;
 }
-/* ???????????????????????????????????????????????????????????????????????????????
-bool intersect(Projection& first, Projection& second) {
-    if (ULTRA_DEBUG) printf("Intersect projections: one - (%lf, %lf), two - (%lf, %lf)\n", first.left, first.right, second.left, second.right);
-    
-    if (equal_double(first.right, second.left)) return true;
-    if (equal_double(second.right, first.left)) return true;
-//<<<<<<< HEAD
-
-    if (less_double(first.right, second.left)) return false;
-    if (less_double(second.right, first.left)) return false;
-
-//=======
-
-    if (less_double(first.right, second.left)) return false;
-    if (less_double(second.right, first.left)) return false;
-
-//>>>>>>> 54cdefd6280c87bbfda733e5dc8240b7402986de
-    return true;
-}
-*/
-////////////////////////////////////////////////////////////////////////////////////////
                                                       
 void take_triangles(std::vector<Triangle>& triangles, std::istream& input_potok, size_t quantity) {
 
@@ -191,28 +170,25 @@ void take_triangles(std::vector<Triangle>& triangles, std::istream& input_potok,
         triangles[i].get_x_projection();
     }
 }
-//////////////////////////////////////////////////////////////////////////////////////////
 
 bool equal_double(double one, double two) {
     return std::abs(one - two) < eps; 
 }
 
 bool great_double(double one, double two) { // one > two
-    //return equal_double(one - two, eps);
+    if (equal_double(one, two)) return false;
     return one > two;
 }
 
 bool less_double(double one, double two) { // one < two
-    //return !great_double(one, two);
+    if (equal_double(one, two)) return false;
     return one < two;
 }
 
 bool GE_double(double one, double two) { // one >= two
     return (equal_double(one, two) || great_double(one, two));
-    //return !less_double(one, two);
 }
 
 bool LE_double(double one, double two) { // one <= two
     return (equal_double(one, two) || less_double(one, two));
-    //return !great_double(one, two);
 }
