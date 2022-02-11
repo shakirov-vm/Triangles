@@ -86,7 +86,9 @@ void Triangle::get_x_projection() {
     x_proj.left = std::min(std::min(A.x, B.x), C.x); 
     x_proj.right = std::max(std::max(A.x, B.x), C.x); 
 }
-bool Triangle::in_triangle(Point const &P) const { //or point is point of trian        !!!!!!!!!!!!
+bool Triangle::in_triangle(Point const &P) const {
+
+    if ((A == P) || (B == P) || (C == P)) return true;
 
 	Vector PA = (P - A) * (1 / (P - A).lenght());
 	Vector PB = (P - B) * (1 / (P - B).lenght());
@@ -105,42 +107,42 @@ void Triangle::dump() const {
 
 Surface::Surface(Triangle const &trian) { 
     // first - A, second - B, third - C
-    surf.x = trian.A.y * (trian.B.z - trian.C.z) + trian.B.y * (trian.C.z - trian.A.z) + trian.C.y * (trian.A.z - trian.B.z);
-    surf.y = trian.A.x * (trian.C.z - trian.B.z) + trian.B.x * (trian.A.z - trian.C.z) + trian.C.x * (trian.B.z - trian.A.z);
-    surf.z = trian.A.x * (trian.B.y - trian.C.y) + trian.B.x * (trian.C.y - trian.A.y) + trian.C.x * (trian.A.y - trian.B.y);
+    normal.x = trian.A.y * (trian.B.z - trian.C.z) + trian.B.y * (trian.C.z - trian.A.z) + trian.C.y * (trian.A.z - trian.B.z);
+    normal.y = trian.A.x * (trian.C.z - trian.B.z) + trian.B.x * (trian.A.z - trian.C.z) + trian.C.x * (trian.B.z - trian.A.z);
+    normal.z = trian.A.x * (trian.B.y - trian.C.y) + trian.B.x * (trian.C.y - trian.A.y) + trian.C.x * (trian.A.y - trian.B.y);
 
-    D = - surf.x * trian.A.x - surf.y * trian.A.y - surf.z * trian.A.z; 
+    D = - normal.x * trian.A.x - normal.y * trian.A.y - normal.z * trian.A.z; 
 
-    double normalize = 1 / surf.lenght();
+    double normalize = 1 / normal.lenght();
 
     if (D < 0) normalize = -normalize;
 
-    surf.x *= normalize;
-    surf.y *= normalize;
-    surf.z *= normalize;
-    D      *= normalize;
+    normal.x *= normalize;
+    normal.y *= normalize;
+    normal.z *= normalize;
+    D        *= normalize;
 
-    if(ULTRA_DEBUG) printf("%ld surface: %lf * x + %lf * y + %lf * z + %lf = 0\n", trian.id, surf.x, surf.y, surf.z, D);
+    if (ULTRA_DEBUG) printf("%ld surface: %lf * x + %lf * y + %lf * z + %lf = 0\n", trian.id, normal.x, normal.y, normal.z, D);
 }
 
 //Line
 
 Line::Line(Surface& one, Surface& two) {
     //guide or direct
-    direct.x = one.surf.y * two.surf.z - one.surf.z * two.surf.y;
-    direct.y = one.surf.z * two.surf.x - one.surf.x * two.surf.z;
-    direct.z = one.surf.x * two.surf.y - one.surf.y * two.surf.x;
+    direct.x = one.normal.y * two.normal.z - one.normal.z * two.normal.y;
+    direct.y = one.normal.z * two.normal.x - one.normal.x * two.normal.z;
+    direct.z = one.normal.x * two.normal.y - one.normal.y * two.normal.x;
     //s is D
-    double scalar_n_n = scalar_mult(one.surf, two.surf);
-    double lenght_1 = one.surf.lenght();
-    double lenght_2 = two.surf.lenght();
+    double scalar_n_n = scalar_mult(one.normal, two.normal);
+    double lenght_1 = one.normal.lenght();
+    double lenght_2 = two.normal.lenght();
 
     double a = (two.D * scalar_n_n - one.D * lenght_2 * lenght_2) / (scalar_n_n * scalar_n_n - lenght_2 * lenght_2 * lenght_1 * lenght_1);
     double b = (one.D * scalar_n_n - two.D * lenght_1 * lenght_1) / (scalar_n_n * scalar_n_n - lenght_2 * lenght_2 * lenght_1 * lenght_1);
 
-    refer.x = a * one.surf.x + b * two.surf.x;
-    refer.y = a * one.surf.y + b * two.surf.y;
-    refer.z = a * one.surf.z + b * two.surf.z;
+    refer.x = a * one.normal.x + b * two.normal.x;
+    refer.y = a * one.normal.y + b * two.normal.y;
+    refer.z = a * one.normal.z + b * two.normal.z;
 
     if (ULTRA_DEBUG) printf("Line:\n\tx = %lf + t * %lf\n\ty = %lf + t * %lf\n\tz = %lf + t * %lf\n", refer.x, direct.x, refer.y, direct.y, refer.z, direct.z);
 }
@@ -208,9 +210,9 @@ bool Segment::in_segment(Point const &P) { // We think that segment isn't point
 //SignDist
 
 SignDist::SignDist (Surface& surf, Triangle& trian) {
-    dist_V_0 = trian.A.x * surf.surf.x + trian.A.y * surf.surf.y + trian.A.z * surf.surf.z + surf.D;
-    dist_V_1 = trian.B.x * surf.surf.x + trian.B.y * surf.surf.y + trian.B.z * surf.surf.z + surf.D;
-    dist_V_2 = trian.C.x * surf.surf.x + trian.C.y * surf.surf.y + trian.C.z * surf.surf.z + surf.D;
+    dist_V_0 = trian.A.x * surf.normal.x + trian.A.y * surf.normal.y + trian.A.z * surf.normal.z + surf.D;
+    dist_V_1 = trian.B.x * surf.normal.x + trian.B.y * surf.normal.y + trian.B.z * surf.normal.z + surf.D;
+    dist_V_2 = trian.C.x * surf.normal.x + trian.C.y * surf.normal.y + trian.C.z * surf.normal.z + surf.D;
 }
 void SignDist::dump() const {
 	printf("SignDist: %lf, %lf, %lf\n", dist_V_0, dist_V_1, dist_V_2);
@@ -270,9 +272,9 @@ bool intersect(Projection const &first, Projection const &second) {
     return true;
 }
 void reverse_normal(Surface& surf) {
-	surf.surf.x = -surf.surf.x;
-	surf.surf.y = -surf.surf.y;
-	surf.surf.z = -surf.surf.z;
+	surf.normal.x = -surf.normal.x;
+	surf.normal.y = -surf.normal.y;
+	surf.normal.z = -surf.normal.z;
 }
 bool is_point(Triangle const &trian) {
 	return(trian.A == trian.B && trian.A == trian.C);

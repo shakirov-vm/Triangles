@@ -50,7 +50,7 @@ void compare_triangles (Triangle& zero, Triangle& first) {
 	SignDist V_0(first_surf, zero);
 	if (less_double(std::max({V_0.dist_V_0, V_0.dist_V_1, V_0.dist_V_2}), 0) || great_double(std::min({V_0.dist_V_0, V_0.dist_V_1, V_0.dist_V_2}), 0)) return; //false
 	
-	if (vector_mult(zero_surf.surf, first_surf.surf).is_null()) { 
+	if (vector_mult(zero_surf.normal, first_surf.normal).is_null()) { 
 		
 		if (!equal_double(zero_surf.D, first_surf.D)) return; // false
 		
@@ -75,7 +75,7 @@ void compare_triangles (Triangle& zero, Triangle& first) {
 
 void handle2D(Triangle& first, Triangle& second, Surface& surf) { 
 
-	Vector old_normal(surf.surf.x, surf.surf.y, surf.surf.z);
+	Vector old_normal(surf.normal.x, surf.normal.y, surf.normal.z);
 	Vector new_normal(0, 0, 1);
 
 	double normal_mult = old_normal.lenght() * new_normal.lenght();
@@ -87,8 +87,8 @@ void handle2D(Triangle& first, Triangle& second, Surface& surf) {
 	
 	Quaternion quaternion(phi, e);
 
-	double k = -surf.D / (surf.surf.x * surf.surf.x + surf.surf.y * surf.surf.y + surf.surf.z * surf.surf.z);
-	Vector shift(k * surf.surf.x, k * surf.surf.y, k * surf.surf.z);
+	double k = -surf.D / (surf.normal.x * surf.normal.x + surf.normal.y * surf.normal.y + surf.normal.z * surf.normal.z);
+	Vector shift(k * surf.normal.x, k * surf.normal.y, k * surf.normal.z);
 
 	Triangle2D first2D(first, quaternion, shift);
 	Triangle2D second2D(second, quaternion, shift); 

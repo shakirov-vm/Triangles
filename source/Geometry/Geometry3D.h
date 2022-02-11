@@ -71,7 +71,7 @@ struct Triangle {
 };
 
 struct Surface {
-	Vector surf;
+	Vector normal;
 	double D;
 
 	Surface(Triangle const &trian);

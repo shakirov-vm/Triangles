@@ -20,8 +20,13 @@ void handle_seg_n_point(Triangle& segment_tr, Triangle& point_tr) {
 }
 
 void handle_trian_n_point(Triangle& trian, Triangle& point_tr) {
-//!!!!!!
+
 	Point point = point_tr.A;
+
+	if (trian.in_triangle(point)) {
+		trian.intersect = true;
+		point_tr.intersect = true;
+	}
 }
 
 void handle_2_seg(Triangle& zero, Triangle& first) {
@@ -31,7 +36,7 @@ void handle_2_seg(Triangle& zero, Triangle& first) {
 	Surface zero_surf(Triangle(zero_segment.P1, zero_segment.P2, first_segment.P1));
 	Surface first_surf(Triangle(zero_segment.P1, zero_segment.P2, first_segment.P2));
 
-	if (!(zero_surf.surf == first_surf.surf)) return; // crossing straight lines
+	if (!(zero_surf.normal == first_surf.normal)) return; // crossing straight lines
 
 	if (intersect_segments(zero_segment, first_segment)) {
 		zero.intersect = true;
@@ -42,8 +47,8 @@ void handle_2_seg(Triangle& zero, Triangle& first) {
 void handle_seg_n_trian(Triangle& segment_tr, Triangle& trian, Surface& trian_surf) {
 
 	Segment segment(segment_tr);
-	if (equal_double(scalar_mult(segment.P1 - segment.P2, trian_surf.surf), 0)) { // Parallel
-		if (equal_double(trian_surf.surf.x * (segment.P1.x - segment.P2.x) + trian_surf.surf.y * (segment.P1.y - segment.P2.y) + trian_surf.surf.z * (segment.P1.z - segment.P2.z), 0)) {
+	if (equal_double(scalar_mult(segment.P1 - segment.P2, trian_surf.normal), 0)) { // Parallel
+		if (equal_double(trian_surf.normal.x * (segment.P1.x - segment.P2.x) + trian_surf.normal.y * (segment.P1.y - segment.P2.y) + trian_surf.normal.z * (segment.P1.z - segment.P2.z), 0)) {
 			
 			if (intersect_segments(segment, Segment(trian.A, trian.B))) {
 				segment_tr.intersect = true;
@@ -65,8 +70,8 @@ void handle_seg_n_trian(Triangle& segment_tr, Triangle& trian, Surface& trian_su
 		else return;
 	}
 	//Not parallel
-	double mu = (trian_surf.D + trian_surf.surf.x * segment.P1.x + trian_surf.surf.y * segment.P1.y + trian_surf.surf.z * segment.P1.z) / 
-					(trian_surf.surf.x * (segment.P1.x - segment.P2.x) + trian_surf.surf.y * (segment.P1.y - segment.P2.y) + trian_surf.surf.z * (segment.P1.z - segment.P2.z));
+	double mu = (trian_surf.D + trian_surf.normal.x * segment.P1.x + trian_surf.normal.y * segment.P1.y + trian_surf.normal.z * segment.P1.z) / 
+					(trian_surf.normal.x * (segment.P1.x - segment.P2.x) + trian_surf.normal.y * (segment.P1.y - segment.P2.y) + trian_surf.normal.z * (segment.P1.z - segment.P2.z));
 
 	if (mu < 0 || mu > 1) return; // intersect point out of segment
 

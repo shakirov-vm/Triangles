@@ -1,11 +1,14 @@
 ﻿cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
-project(Triangles)
 
-add_executable(Triangles source/main.cpp source/Triangle/triangle.cpp source/Sort/sort.cpp source/Compare/compare.cpp source/Compare/compare2D.cpp)
+set (PROJECT Triangles)
+
+project(${PROJECT})
+
+add_executable(Triangles source/main.cpp source/Geometry/Geometry3D.cpp source/Sort/sort.cpp source/Compare/Compare.cpp source/Geometry/Geometry2D.cpp source/Tools/Tools.cpp source/Degenerative/Degenerative.cpp)
 
 enable_testing()
 
-add_test(FirstTest Triangles ../source/Tests/input_1.txt ../source/Tests/answer_1.txt)
+add_test(NoIntersect Triangles ../source/Tests/input_1.txt ../source/Tests/answer_1.txt)
 add_test(SecondTest Triangles ../source/Tests/input_2.txt ../source/Tests/answer_2.txt)
 add_test(ThirdTest Triangles ../source/Tests/input_3.txt ../source/Tests/answer_3.txt)
 add_test(FourthTest Triangles ../source/Tests/input_4.txt ../source/Tests/answer_4.txt)
@@ -13,5 +16,16 @@ add_test(FifthTest Triangles ../source/Tests/input_5.txt ../source/Tests/answer_
 add_test(SixthTest Triangles ../source/Tests/input_6.txt ../source/Tests/answer_6.txt)
 add_test(SeventhTest Triangles ../source/Tests/input_7.txt ../source/Tests/answer_7.txt)
 add_test(EighthTest Triangles ../source/Tests/input_8.txt ../source/Tests/answer_8.txt)
-add_test(NinthTest Triangles ../source/Tests/input_9.txt ../source/Tests/answer_9.txt)
-add_test(TenthTest Triangles ../source/Tests/input_10.txt ../source/Tests/answer_10.txt)
+add_test(Accuracy Triangles ../source/Tests/input_9.txt ../source/Tests/answer_9.txt)
+add_test(Accuracy_2 Triangles ../source/Tests/input_10.txt ../source/Tests/answer_10.txt)
+add_test(FirstFall Triangles ../source/Tests/input_11.txt ../source/Tests/answer_11.txt)
+add_test(WeakAccuracy Triangles ../source/Tests/input_12.txt ../source/Tests/answer_12.txt)
+add_test(OnePlaneEazyYes Triangles ../source/Tests/input_13.txt ../source/Tests/answer_13.txt)
+add_test(OnePlaneEazyNo Triangles ../source/Tests/input_15.txt ../source/Tests/answer_15.txt)
+add_test(NoCommonNodeYes Triangles ../source/Tests/input_16.txt ../source/Tests/answer_16.txt)
+add_test(Triangle2Segments Triangles ../source/Tests/input_17.txt ../source/Tests/answer_17.txt)
+add_test(Triangle3Segments Triangles ../source/Tests/input_18.txt ../source/Tests/answer_18.txt)
+add_test(ExtraFallYes Triangles ../source/Tests/input_19.txt ../source/Tests/answer_19.txt)
+add_test(TrianglesAndSegments Triangles ../source/Tests/input_20.txt ../source/Tests/answer_20.txt)
+add_test(PlaneComponents Triangles ../source/Tests/input_21.txt ../source/Tests/answer_21.txt)
+add_test(ExtraFallNo Triangles ../source/Tests/input_22.txt ../source/Tests/answer_22.txt)
