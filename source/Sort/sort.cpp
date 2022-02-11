@@ -2,9 +2,8 @@
 #include <iterator>
 #include <iostream>
 
-#include "../Triangle/triangle.h"
-#include "../Compare/compare.h"
-#include "../Triangle/double_tools.h"
+#include "../Geometry/Geometry3D.h"
+#include "../Compare/Compare.h"
 #include "sort.h"
 
 void sort_triangles(std::vector<Triangle>& triangles) {
@@ -21,10 +20,5 @@ void sort_triangles(std::vector<Triangle>& triangles) {
 			break;
 		}
 	}
-
-}
-
-bool compare_proj(Triangle& first, Triangle& second) {
-	return less_double(first.x_proj.left, second.x_proj.left); 
 }
 

@@ -1,46 +1,33 @@
-#include <iostream>
-#include <algorithm>
 
-#include "../Triangle/triangle.h"
-#include "../Triangle/double_tools.h"
-#include "compare.h"
-#include "compare2D.h"
- 
+//#include <cmath>
+#include "Compare.h"
+
 void compare_triangles (Triangle& zero, Triangle& first) {
 
-	if (DEBUG) zero.dump();
-	if (DEBUG) first.dump();
-
 	if (is_point(zero) && is_point(first)) {
-		if (DEBUG) printf("2 points\n");
 		handle_2_point(zero, first);
 		return;
 	} 
 
 	if (is_point(zero) && !is_point(first)) {
 		if (is_segment(first)) {
-			if (DEBUG) printf("point and segment\n");
 			handle_seg_n_point(first, zero);
 			return;
 		}
-		if (DEBUG) printf("point and triangle\n");
 		handle_trian_n_point(first, zero);
 		return;
 	}
 
 	if (!is_point(zero) && is_point(first)) {
 		if (is_segment(zero)) {
-			if (DEBUG) printf("point and segment\n");
 			handle_seg_n_point(zero, first);
 			return;
 		}
-		if (DEBUG) printf("point and triangle\n");
 		handle_trian_n_point(zero, first);
 		return;
 	}
 
 	if (is_segment(zero) && is_segment(first)) {
-		if (DEBUG) printf("2 segments\n");
 		handle_2_seg(zero, first);
 		return;
 	}
@@ -48,20 +35,14 @@ void compare_triangles (Triangle& zero, Triangle& first) {
 	Surface zero_surf(zero);
 	Surface first_surf(first);
 
-	if (DEBUG) printf("%ld surface: (%lf, %lf, %lf)\n", zero.id, zero_surf.surf.x, zero_surf.surf.y, zero_surf.surf.z);
-	if (DEBUG) printf("%ld surface: (%lf, %lf, %lf)\n", first.id, first_surf.surf.x, first_surf.surf.y, first_surf.surf.z);
-
 	if (is_segment(zero) && !is_segment(first)) {
-		if (DEBUG) printf("segment and triangle\n");
 		handle_seg_n_trian(zero, first, first_surf);
 		return;
 	}
 	if (is_segment(first) && !is_segment(zero)) {
-		if (DEBUG) printf("segment and triangle\n");
 		handle_seg_n_trian(first, zero, zero_surf);
 		return;
 	}
-	if (DEBUG) printf("after degenerate\n");
 
 	SignDist V_1(zero_surf, first);
 	if (less_double(std::max({V_1.dist_V_0, V_1.dist_V_1, V_1.dist_V_2}), 0) || great_double(std::min({V_1.dist_V_0, V_1.dist_V_1, V_1.dist_V_2}), 0)) return; //false
@@ -86,114 +67,65 @@ void compare_triangles (Triangle& zero, Triangle& first) {
 	Projection first_proj (main, first, V_1);
 
 	if (intersect(zero_proj, first_proj)) {
-		if (DEBUG) printf("3D Triangles intersect: (%ld; %ld)\n", zero.id, first.id);
 		zero.intersect = true;
 		first.intersect = true;
 	}
 	return;
 }
 
-void reverse_normal(Surface& surf) {
-	surf.surf.x = -surf.surf.x;
-	surf.surf.y = -surf.surf.y;
-	surf.surf.z = -surf.surf.z;
-}
+void handle2D(Triangle& first, Triangle& second, Surface& surf) { 
 
-void handle_seg_n_trian(Triangle& segment_tr, Triangle& trian, Surface& trian_surf) {
+	Vector old_normal(surf.surf.x, surf.surf.y, surf.surf.z);
+	Vector new_normal(0, 0, 1);
 
-	Segment segment(segment_tr);
-	if (equal_double(scalar_mult(segment.P1 - segment.P2, trian_surf.surf), 0)) { // Parallel
-		if (equal_double(trian_surf.surf.x * (segment.P1.x - segment.P2.x) + trian_surf.surf.y * (segment.P1.y - segment.P2.y) + trian_surf.surf.z * (segment.P1.z - segment.P2.z), 0)) {
-			
-			if (intersect_segments(segment, Segment(trian.A, trian.B))) {
-				segment_tr.intersect = true;
-				trian.intersect = true;
-			}
-			if (intersect_segments(segment, Segment(trian.A, trian.C))) {
-				segment_tr.intersect = true;
-				trian.intersect = true;
-			}
-			if (intersect_segments(segment, Segment(trian.C, trian.B))) {
-				segment_tr.intersect = true;
-				trian.intersect = true;
-			}
-			if (trian.in_triangle(segment.P1)) {
-				segment_tr.intersect = true;
-				trian.intersect = true;
-			}
-		}
-		else return;
-	}
-	//Not parallel
-	double mu = (trian_surf.D + trian_surf.surf.x * segment.P1.x + trian_surf.surf.y * segment.P1.y + trian_surf.surf.z * segment.P1.z) / 
-					(trian_surf.surf.x * (segment.P1.x - segment.P2.x) + trian_surf.surf.y * (segment.P1.y - segment.P2.y) + trian_surf.surf.z * (segment.P1.z - segment.P2.z));
+	double normal_mult = old_normal.lenght() * new_normal.lenght();
 
-	if (mu < 0 || mu > 1) return; // intersect point out of segment
+	Vector e = vector_mult(old_normal, new_normal);
+	if (!equal_double(e.lenght(), 0)) e.mult_length(1/(e.lenght()));
 
-	Point P = segment.P1 + mu * (segment.P2 - segment.P1);
+	double phi = acos(scalar_mult(old_normal, new_normal) / normal_mult);
+	
+	Quaternion quaternion(phi, e);
 
-	if (trian.in_triangle(P)) {
-		segment_tr.intersect = true;
-		trian.intersect = true;
-	}	
-}
+	double k = -surf.D / (surf.surf.x * surf.surf.x + surf.surf.y * surf.surf.y + surf.surf.z * surf.surf.z);
+	Vector shift(k * surf.surf.x, k * surf.surf.y, k * surf.surf.z);
 
-void handle_2_seg(Triangle& zero, Triangle& first) {
-	Segment zero_segment(zero);
-	Segment first_segment(first);
+	Triangle2D first2D(first, quaternion, shift);
+	Triangle2D second2D(second, quaternion, shift); 
 
-	Surface zero_surf(Triangle(zero_segment.P1, zero_segment.P2, first_segment.P1));
-	Surface first_surf(Triangle(zero_segment.P1, zero_segment.P2, first_segment.P2));
-
-	if (!(zero_surf.surf == first_surf.surf)) return; // crossing straight lines
-
-	if (intersect_segments(zero_segment, first_segment)) {
-		zero.intersect = true;
+	if (Compare2D(first2D, second2D)) {
+		if (DEBUG) printf("2D Triangles intersect: (%ld; %ld)\n", first.id, second.id);
 		first.intersect = true;
+		second.intersect = true;
 	}
 }
 
-void handle_2_point(Triangle& P1, Triangle& P2) {
-	if (P1.A == P2.A) {
-		P1.intersect = true;
-		P2.intersect = true;
-	}
-}
+bool Compare2D(Triangle2D& first, Triangle2D& second) {
 
-void handle_seg_n_point(Triangle& segment_tr, Triangle& point_tr) {
-	
-	Segment segment(segment_tr);
-	Point point = point_tr.A;
+	Segment2DTriangle segment_first(first);
+	Segment2DTriangle segment_second(second);
 
-	if (segment.in_segment(point)) {
-		segment_tr.intersect = true;
-		point_tr.intersect = true;
-	}
-}
+	SignDist2DTriangle SD_from_first(second, segment_first.seg_A, segment_first.seg_B, segment_first.seg_C);
+	SignDist2DTriangle SD_from_second(first, segment_second.seg_A, segment_second.seg_B, segment_second.seg_C);
 
-void handle_trian_n_point(Triangle& trian, Triangle& point_tr) {
+	if (check_intersect_triangle(SD_from_first, SD_from_second, segment_first, segment_second)) return true;
+	if (check_internal(SD_from_first)) return true;
+	if (check_internal(SD_from_second)) return true;
 
-	Point point = point_tr.A;
-}
-
-bool is_point(Triangle const &trian) {
-	return(trian.A == trian.B && trian.A == trian.C);
-}
-bool is_segment(Triangle const &trian) { // is it the best way? we can check any phi, if phi equal pi => segment
-	if (is_point(trian)) return false;
-	if (vector_mult(trian.A - trian.B, trian.A - trian.C).is_null()) return true;
 	return false;
 }
 
-bool intersect_segments(Segment const &first, Segment const &second) {
-	
-	if (!intersect(Projection(first.P1.x, first.P2.x), Projection(second.P1.x, second.P2.x))) return false;
-	if (!intersect(Projection(first.P1.y, first.P2.y), Projection(second.P1.y, second.P2.y))) return false;
-	if (!intersect(Projection(first.P1.z, first.P2.z), Projection(second.P1.z, second.P2.z))) return false;
+void take_triangles(std::vector<Triangle>& triangles, std::istream& input_potok, size_t quantity) {
 
-	if ((scalar_mult(vector_mult(second.P1 - first.P1, first.P2 - first.P1), vector_mult(second.P2 - first.P1, first.P2 - first.P1)) <= 0) 
-	 && (scalar_mult(vector_mult(first.P1 - second.P1, second.P2 - second.P1), vector_mult(first.P2 - second.P1, second.P2 - second.P1)) <= 0)) {
-		return true;
-	}	
-	return false;
+    if (DEBUG) printf("vector size - ");
+    if (DEBUG) std::cout << triangles.size() << "\n";
+
+    for (size_t i = 0; i < quantity; i++) {
+        
+        input_potok >> triangles[i].A.x >> triangles[i].A.y >> triangles[i].A.z;
+        input_potok >> triangles[i].B.x >> triangles[i].B.y >> triangles[i].B.z;
+        input_potok >> triangles[i].C.x >> triangles[i].C.y >> triangles[i].C.z;
+        triangles[i].id = i + 1;
+        triangles[i].get_x_projection();
+    }
 }

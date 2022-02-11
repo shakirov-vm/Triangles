@@ -1,3 +1,3 @@
-g++ main.cpp ./Triangle/triangle.cpp ./Sort/sort.cpp ./Compare/compare.cpp ./Compare/compare2D.cpp -o exe.exe
+g++ main.cpp ./Geometry/Geometry3D.cpp ./Geometry/Geometry2D.cpp ./Sort/sort.cpp ./Compare/Compare.cpp ./Degenerative/Degenerative.cpp ./Tools/Tools.cpp -o exe.exe
 ./exe.exe Tests/input_1.txt
 ./exe.exe Tests/input_1.txt Tests/answer_1.txt

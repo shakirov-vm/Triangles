@@ -1,12 +1,10 @@
 #pragma once
 
-void handle_seg_n_trian(Triangle& segment_tr, Triangle& trian, Surface& trian_surf);
+#include "../Geometry/Geometry3D.h"
+#include "../Geometry/Geometry2D.h"
+#include "../Degenerative/Degenerative.h"
+
 void compare_triangles(Triangle& first, Triangle& second);
-void reverse_normal(Surface& surf);
-bool is_point(Triangle const &trian);
-void handle_2_seg(Triangle& zero, Triangle& first);
-void handle_2_point(Triangle& P1, Triangle& P2);
-void handle_seg_n_point(Triangle& segment_tr, Triangle& point_tr);
-void handle_trian_n_point(Triangle& trian, Triangle& point_tr);
-bool intersect_segments(Segment const &first, Segment const &second);
-bool is_segment(Triangle const &trian);
+void handle2D (Triangle& first, Triangle& second, Surface& surf);
+bool Compare2D (Triangle2D& first, Triangle2D& second);
+void take_triangles(std::vector<Triangle>& triangles, std::istream& input_potok, size_t quantity);

@@ -1,51 +1,5 @@
-#include <cmath>
-#include "../Triangle/triangle.h"
-#include "compare2D.h"
 
-
-void handle2D (Triangle& first, Triangle& second, Surface& surf) { 
-
-	Vector old_normal(surf.surf.x, surf.surf.y, surf.surf.z);
-	Vector new_normal(0, 0, 1);
-
-	//printf("old normal is (%lf, %lf, %lf)\n", surf.surf.x, surf.surf.y, surf.surf.z);
-
-	double normal_mult = old_normal.lenght() * new_normal.lenght();
-
-	Vector e = vector_mult(old_normal, new_normal);
-	if (!equal_double(e.lenght(), 0)) e.mult_length(1/(e.lenght()));
-
-	double phi = acos(scalar_mult(old_normal, new_normal) / normal_mult);
-	
-	Quaternion quaternion(phi, e);
-
-	double k = -surf.D / (surf.surf.x * surf.surf.x + surf.surf.y * surf.surf.y + surf.surf.z * surf.surf.z);
-	Vector shift(k * surf.surf.x, k * surf.surf.y, k * surf.surf.z);
-
-	Triangle2D first2D(first, quaternion, shift);
-	Triangle2D second2D(second, quaternion, shift); 
-
-	if (Compare2D(first2D, second2D)) {
-		if (DEBUG) printf("2D Triangles intersect: (%ld; %ld)\n", first.id, second.id);
-		first.intersect = true;
-		second.intersect = true;
-	}
-}
-
-bool Compare2D (Triangle2D& first, Triangle2D& second) {
-
-	Segment2DTriangle segment_first(first);
-	Segment2DTriangle segment_second(second);
-
-	SignDist2DTriangle SD_from_first(second, segment_first.seg_A, segment_first.seg_B, segment_first.seg_C);
-	SignDist2DTriangle SD_from_second(first, segment_second.seg_A, segment_second.seg_B, segment_second.seg_C);
-
-	if (check_intersect_triangle(SD_from_first, SD_from_second, segment_first, segment_second)) return true;
-	if (check_internal(SD_from_first)) return true;
-	if (check_internal(SD_from_second)) return true;
-
-	return false;
-}
+#include "Geometry2D.h"
 
 Line2D::Line2D (Point2D& first, Point2D& second) {
 	a = second.y - first.y;
@@ -57,7 +11,6 @@ Segment2D::Segment2D(Point2D& start_, Point2D& end_) : start(start_), end(end_),
 	normal.x = equation.a;
 	normal.y = equation.b;
 }
-
 void Segment2D::set_normal(Point2D& point) {
 	if (less_double(equation.a * point.x + equation.b * point.y + equation.c, 0)) {
 		normal.x = -(normal.x);
@@ -77,7 +30,9 @@ bool check_internal(SignDist2DTriangle& tr) {
 		&& great_double(tr.to_C.SD_A, 0) && great_double(tr.to_C.SD_B, 0) && great_double(tr.to_C.SD_C, 0)) return true;
 	return false;
 }
-
+double count_sign_dist(Point2D& point, Line2D& line) {
+	return (line.a * point.x + line.b * point.y + line.c);
+}
 bool check_intersect_triangle(SignDist2DTriangle& first_from, SignDist2DTriangle& second_from, Segment2DTriangle& seg_first, Segment2DTriangle& seg_second) {
 
 	if (check_segments(first_from.to_A.SD_A, first_from.to_A.SD_B, second_from.to_A.SD_A, second_from.to_A.SD_B, seg_second.seg_A, seg_first.seg_A)) return true;
@@ -94,11 +49,6 @@ bool check_intersect_triangle(SignDist2DTriangle& first_from, SignDist2DTriangle
 
 	return false;
 }
-
-double count_sign_dist(Point2D& point, Line2D& line) {
-	return (line.a * point.x + line.b * point.y + line.c);
-}
-
 bool check_segments(double first_left, double first_right, double second_left, double second_right, Segment2D& first, Segment2D& second) {
 	if (equal_double(first_left, 0) && equal_double(first_right, 0) && equal_double(second_left, 0) && equal_double(second_right, 0)) {
 
@@ -128,15 +78,7 @@ bool check_segments(double first_left, double first_right, double second_left, d
 	return false;
 }
 
-Vector cut_quat_to_vec(Quaternion quat) {
-	Vector ret(quat.qvec.x, quat.qvec.y, quat.qvec.z);
-	return ret;
-}
 Vector2D cut_vec_to_2D(Vector vec) {
 	Vector2D ret(vec.x, vec.y);
 	return ret;
 }
-/*
-bool intersect_segments(Segment &first, Segment &second) {
-	
-}*/

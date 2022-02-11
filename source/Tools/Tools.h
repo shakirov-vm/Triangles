@@ -1,7 +1,10 @@
 #pragma once
-
+ 
 #include <algorithm>
-#include <math.h>
+#include <cmath>
+
+#define DEBUG 0
+#define ULTRA_DEBUG 0
 
 #define eps 0.0001
 

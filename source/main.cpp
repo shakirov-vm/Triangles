@@ -6,8 +6,8 @@
 #include <fstream>
 
 #include "Sort/sort.h"
-#include "Triangle/triangle.h"
-#include "Triangle/double_tools.h"
+#include "Geometry/Geometry3D.h"
+#include "Compare/Compare.h"
 
 bool YourTest(std::string& input);
 bool E2ETest(std::string& input, std::string& answer);
