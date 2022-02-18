@@ -1,6 +1,13 @@
 
 #include "Degenerative.h"
 
+/*
+This module describes the algorithms for the intersection of triangles and degenerate triangles - segments and points. 
+All options are just gone. 
+*/
+
+namespace Triangles {
+
 void handle_2_point(Triangle& P1, Triangle& P2) {
 	if (P1.A == P2.A) {
 		P1.intersect = true;
@@ -44,7 +51,7 @@ void handle_2_seg(Triangle& zero, Triangle& first) {
 	}
 }
 
-void handle_seg_n_trian(Triangle& segment_tr, Triangle& trian, Surface& trian_surf) {
+void handle_seg_n_trian(Triangle& segment_tr, Triangle& trian, Surface const &trian_surf) {
 
 	Segment segment(segment_tr);
 	if (equal_double(scalar_mult(segment.P1 - segment.P2, trian_surf.normal), 0)) { // Parallel
@@ -83,3 +90,4 @@ void handle_seg_n_trian(Triangle& segment_tr, Triangle& trian, Surface& trian_su
 	}	
 }
 
+}

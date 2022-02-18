@@ -2,47 +2,26 @@
 //#include <cmath>
 #include "Compare.h"
 
+/*
+This module contains the logic of basic actions when finding intersections.
+The algorithm is as follows: 
+1) we check the degenerate cases, 
+2) calculate the signed distances from one triangle to the plane of another, and vice versa; 
+if the triangles intersect, then the distances have different signs.
+3) Next comes the processing of the case of parallel planes.
+4) Finally, in the case of non-parallelism: we find the line of intersection of the triangles, 
+then the projections of the triangles onto this line - and then we look at their intersection.
+
+The 3D case intersection algorithm is taken from the book "Geometric Tools for Computer Graphics" by Schneider P., Eberly D.H.
+*/
+namespace Triangles {
+
 void compare_triangles (Triangle& zero, Triangle& first) {
 
-	if (is_point(zero) && is_point(first)) {
-		handle_2_point(zero, first);
-		return;
-	} 
-
-	if (is_point(zero) && !is_point(first)) {
-		if (is_segment(first)) {
-			handle_seg_n_point(first, zero);
-			return;
-		}
-		handle_trian_n_point(first, zero);
-		return;
-	}
-
-	if (!is_point(zero) && is_point(first)) {
-		if (is_segment(zero)) {
-			handle_seg_n_point(zero, first);
-			return;
-		}
-		handle_trian_n_point(zero, first);
-		return;
-	}
-
-	if (is_segment(zero) && is_segment(first)) {
-		handle_2_seg(zero, first);
-		return;
-	}
+	if (is_degenerative(zero, first)) return;
 
 	Surface zero_surf(zero);
 	Surface first_surf(first);
-
-	if (is_segment(zero) && !is_segment(first)) {
-		handle_seg_n_trian(zero, first, first_surf);
-		return;
-	}
-	if (is_segment(first) && !is_segment(zero)) {
-		handle_seg_n_trian(first, zero, zero_surf);
-		return;
-	}
 
 	SignDist V_1(zero_surf, first);
 	if (less_double(std::max({V_1.dist_V_0, V_1.dist_V_1, V_1.dist_V_2}), 0) || great_double(std::min({V_1.dist_V_0, V_1.dist_V_1, V_1.dist_V_2}), 0)) return; //false
@@ -50,16 +29,7 @@ void compare_triangles (Triangle& zero, Triangle& first) {
 	SignDist V_0(first_surf, zero);
 	if (less_double(std::max({V_0.dist_V_0, V_0.dist_V_1, V_0.dist_V_2}), 0) || great_double(std::min({V_0.dist_V_0, V_0.dist_V_1, V_0.dist_V_2}), 0)) return; //false
 	
-	if (vector_mult(zero_surf.normal, first_surf.normal).is_null()) { 
-		
-		if (!equal_double(zero_surf.D, first_surf.D)) return; // false
-		
-		if (equal_double(zero_surf.D, first_surf.D)) {
-
-			handle2D (zero, first, zero_surf);
-			return;
-		}
-	}
+	if(is_parallel(zero, first, zero_surf, first_surf)) return;
 
 	Line main(zero_surf, first_surf);
 
@@ -73,7 +43,66 @@ void compare_triangles (Triangle& zero, Triangle& first) {
 	return;
 }
 
-void handle2D(Triangle& first, Triangle& second, Surface& surf) { 
+bool is_degenerative(Triangle& zero, Triangle& first) {
+
+	if (is_point(zero) && is_point(first)) {
+		handle_2_point(zero, first);
+		return true;
+	} 
+
+	if (is_point(zero) && !is_point(first)) {
+		if (is_segment(first)) {
+			handle_seg_n_point(first, zero);
+			return true;
+		}
+		handle_trian_n_point(first, zero);
+		return true;
+	}
+
+	if (!is_point(zero) && is_point(first)) {
+		if (is_segment(zero)) {
+			handle_seg_n_point(zero, first);
+			return true;
+		}
+		handle_trian_n_point(zero, first);
+		return true;
+	}
+
+	if (is_segment(zero) && is_segment(first)) {
+		handle_2_seg(zero, first);
+		return true;
+	}
+
+	Surface zero_surf(zero);
+	Surface first_surf(first);
+
+	if (is_segment(zero) && !is_segment(first)) {
+		handle_seg_n_trian(zero, first, first_surf);
+		return true;
+	}
+	if (is_segment(first) && !is_segment(zero)) {
+		handle_seg_n_trian(first, zero, zero_surf);
+		return true;
+	}
+	return false;
+}
+
+bool is_parallel(Triangle& zero, Triangle& first, Surface const &zero_surf, Surface const &first_surf) {
+
+	if (vector_mult(zero_surf.normal, first_surf.normal).is_null()) { 
+		
+		if (!equal_double(zero_surf.D, first_surf.D)) return true;
+		
+		if (equal_double(zero_surf.D, first_surf.D)) {
+
+			handle2D (zero, first, zero_surf);
+			return true;
+		}
+	}
+	return false;
+}
+
+void handle2D(Triangle& first, Triangle& second, Surface const &surf) { 
 
 	Vector old_normal(surf.normal.x, surf.normal.y, surf.normal.z);
 	Vector new_normal(0, 0, 1);
@@ -94,7 +123,7 @@ void handle2D(Triangle& first, Triangle& second, Surface& surf) {
 	Triangle2D second2D(second, quaternion, shift); 
 
 	if (Compare2D(first2D, second2D)) {
-		if (DEBUG) printf("2D Triangles intersect: (%ld; %ld)\n", first.id, second.id);
+
 		first.intersect = true;
 		second.intersect = true;
 	}
@@ -117,9 +146,6 @@ bool Compare2D(Triangle2D& first, Triangle2D& second) {
 
 void take_triangles(std::vector<Triangle>& triangles, std::istream& input_potok, size_t quantity) {
 
-    if (DEBUG) printf("vector size - ");
-    if (DEBUG) std::cout << triangles.size() << "\n";
-
     for (size_t i = 0; i < quantity; i++) {
         
         input_potok >> triangles[i].A.x >> triangles[i].A.y >> triangles[i].A.z;
@@ -128,4 +154,6 @@ void take_triangles(std::vector<Triangle>& triangles, std::istream& input_potok,
         triangles[i].id = i + 1;
         triangles[i].get_x_projection();
     }
+}
+
 }

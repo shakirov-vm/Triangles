@@ -1,6 +1,6 @@
 ﻿
 #include <vector>
-#include <stdio.h>
+#include <cstdio>
 #include <string>
 #include <iostream>
 #include <fstream>
@@ -8,6 +8,8 @@
 #include "Sort/sort.h"
 #include "Geometry/Geometry3D.h"
 #include "Compare/Compare.h"
+
+using Triangles::Triangle;
 
 bool YourTest(std::string& input);
 bool E2ETest(std::string& input, std::string& answer);
@@ -118,19 +120,13 @@ bool E2ETest(std::string& input, std::string& answer) {
 			return true;
 		}
 
-		if (DEBUG) printf("result - answer, answer size - %ld\n", answer_res.size());
-
 		for (size_t i = 0; i != answer_res.size(); i++) {
-			if (DEBUG) printf("\t%ld - %ld", input_res[i], answer_res[i]);
 			if (input_res[i] != answer_res[i]) {
-				if (DEBUG) printf("\t!!!");
 				error++;
 			} 
-			if (DEBUG) printf("\n");
 		}
 
 		if (error) {
-			if (DEBUG) printf("%ld errors\n", error);
 			return false;
 		}
 

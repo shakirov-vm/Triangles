@@ -5,6 +5,15 @@
 #include <string>
 
 #include "Geometry3D.h"
+
+/*
+This module defines the basic 3D structures: 
+vector, quaternion, triangle, surface, line, segment, signed distance from points to the plane;
+and operations on them (as well as constructors) 
+*/
+
+namespace Triangles {
+
 //Vector
 
 //There don't need Class::func!
@@ -32,27 +41,6 @@ bool operator==(Vector const &first, Vector const &second) {
     return (equal_double(first.x, second.x) && equal_double(first.y, second.y) && equal_double(first.z, second.z));
 }
 
-bool Vector::is_null() const {
-	if (equal_double(x, 0) && equal_double(y, 0) && equal_double(z, 0)) return true;
-	return false;
-}
-double Vector::lenght() const {
-    return std::sqrt(x * x + y * y + z * z);
-}
-void Vector::mult_length(double scalar) {
-	if (equal_double(scalar, 0)) return; //maybe exception?
-	x *= scalar;
-	y *= scalar;
-	z *= scalar;
-}
-Vector Vector::reverse() {
-	x = -x;
-	y = -y;
-	z = -z;
-
-	return *this;
-}
-
 //Quaternion
 
 Quaternion operator*(Quaternion const &first, Quaternion const &second) {
@@ -64,28 +52,8 @@ Quaternion operator*(Quaternion const &first, Quaternion const &second) {
     return returned;
 }
 
-Quaternion::Quaternion(double const phi, Vector const &e) {
-	w = cos(phi/2);
-	qvec.x = e.x * sin(phi/2);
-	qvec.y = e.y * sin(phi/2);
-	qvec.z = e.z * sin(phi/2);
-}
-Quaternion Quaternion::conjugate() const { // const, because we don't want conjigate our quaternion, we want copy
-
-	Quaternion returned(*this); // we can do =
-	returned.qvec = returned.qvec.reverse();
-	return returned;
-}
-void Quaternion::dump() const {
-	printf("(%lf, %lf, %lf, %lf)", w, qvec.x, qvec.y, qvec.z); // maybe will better do operator for this? but...
-}
-
 //Triangle
 
-void Triangle::get_x_projection() {
-    x_proj.left = std::min(std::min(A.x, B.x), C.x); 
-    x_proj.right = std::max(std::max(A.x, B.x), C.x); 
-}
 bool Triangle::in_triangle(Point const &P) const {
 
     if ((A == P) || (B == P) || (C == P)) return true;
@@ -100,7 +68,11 @@ bool Triangle::in_triangle(Point const &P) const {
 	return false;
 }
 void Triangle::dump() const {
-	printf("Triangle %ld: A(%lf, %lf, %lf), B(%lf, %lf, %lf), C(%lf, %lf, %lf)\n", id, A.x, A.y, A.z, B.x, B.y, B.z, C.x, C.y, C.z);
+
+    std::cout << "Triangle " << id << ": ";
+    std::cout << "A(" << A.x << ", " << A.y << ", " << A.z << "), ";
+    std::cout << "B(" << B.x << ", " << B.y << ", " << B.z << "), ";
+    std::cout << "C(" << C.x << ", " << C.y << ", " << C.z << ")" << std::endl;
 }
 
 //Surface
@@ -121,13 +93,11 @@ Surface::Surface(Triangle const &trian) {
     normal.y *= normalize;
     normal.z *= normalize;
     D        *= normalize;
-
-    if (ULTRA_DEBUG) printf("%ld surface: %lf * x + %lf * y + %lf * z + %lf = 0\n", trian.id, normal.x, normal.y, normal.z, D);
 }
 
 //Line
 
-Line::Line(Surface& one, Surface& two) {
+Line::Line(Surface const &one, Surface const &two) {
     //guide or direct
     direct.x = one.normal.y * two.normal.z - one.normal.z * two.normal.y;
     direct.y = one.normal.z * two.normal.x - one.normal.x * two.normal.z;
@@ -143,10 +113,8 @@ Line::Line(Surface& one, Surface& two) {
     refer.x = a * one.normal.x + b * two.normal.x;
     refer.y = a * one.normal.y + b * two.normal.y;
     refer.z = a * one.normal.z + b * two.normal.z;
-
-    if (ULTRA_DEBUG) printf("Line:\n\tx = %lf + t * %lf\n\ty = %lf + t * %lf\n\tz = %lf + t * %lf\n", refer.x, direct.x, refer.y, direct.y, refer.z, direct.z);
 }
-Line::Line(Point& one, Point& two) {
+Line::Line(Point const &one, Point const &two) {
     refer.x = one.x;
     refer.y = one.y;
     refer.z = one.z;
@@ -209,18 +177,15 @@ bool Segment::in_segment(Point const &P) { // We think that segment isn't point
 
 //SignDist
 
-SignDist::SignDist (Surface& surf, Triangle& trian) {
+SignDist::SignDist (Surface const &surf, Triangle const &trian) {
     dist_V_0 = trian.A.x * surf.normal.x + trian.A.y * surf.normal.y + trian.A.z * surf.normal.z + surf.D;
     dist_V_1 = trian.B.x * surf.normal.x + trian.B.y * surf.normal.y + trian.B.z * surf.normal.z + surf.D;
     dist_V_2 = trian.C.x * surf.normal.x + trian.C.y * surf.normal.y + trian.C.z * surf.normal.z + surf.D;
 }
-void SignDist::dump() const {
-	printf("SignDist: %lf, %lf, %lf\n", dist_V_0, dist_V_1, dist_V_2);
-}
 
 //Projection
 
-Projection::Projection(Line& main, Triangle& trian, SignDist& sign) {
+Projection::Projection(Line const &main, Triangle& trian, SignDist& sign) {
 
     if (less_double(sign.dist_V_0 * sign.dist_V_1, 0)) {
         if (less_double(sign.dist_V_2, 0)) {
@@ -254,14 +219,11 @@ Projection::Projection(Line& main, Triangle& trian, SignDist& sign) {
 
     if (great_double(left, right))
         std::swap(left, right);
-
-    if (ULTRA_DEBUG) printf("Projection: (%lf, %lf)\n", left, right);
 }
 
 //Other
 
 bool intersect(Projection const &first, Projection const &second) {
-    if (ULTRA_DEBUG) printf("Intersect projections: one - (%lf, %lf), two - (%lf, %lf)\n", first.left, first.right, second.left, second.right);
     
     if (equal_double(first.right, second.left)) return true;
     if (equal_double(second.right, first.left)) return true;
@@ -302,4 +264,6 @@ bool compare_proj(Triangle const &first, Triangle const &second) {
 Vector cut_quat_to_vec(Quaternion quat) {
     Vector ret(quat.qvec.x, quat.qvec.y, quat.qvec.z);
     return ret;
+}
+
 }

@@ -4,6 +4,14 @@
 
 #include "../Geometry/Geometry3D.h"
 
+/*
+This module defines the basic 2D structures: 
+vector, triangle, line, segment, signed distance from points to line; 
+and operations on them (as well as constructors) 
+*/
+
+namespace Triangles {
+
 struct Vector2D {
 	double x = NAN;
 	double y = NAN;
@@ -21,7 +29,7 @@ struct Triangle2D {
 	Point2D B;
 	Point2D C;
 	
-	Triangle2D(Point2D& A_, Point2D& B_, Point2D& C_) : A(A_), B(B_), C(C_) {}
+	Triangle2D(Point2D const &A_, Point2D const &B_, Point2D const &C_) : A(A_), B(B_), C(C_) {}
 	Triangle2D(Triangle const &trian3D, Quaternion const &quat, Vector const &shift) :
 				A(cut_vec_to_2D(cut_quat_to_vec((quat * Quaternion(trian3D.A - shift)) * quat.conjugate()))), 
 			  	B(cut_vec_to_2D(cut_quat_to_vec((quat * Quaternion(trian3D.B - shift)) * quat.conjugate()))),
@@ -33,17 +41,20 @@ struct Line2D {
 	double b;
 	double c;
 
-	Line2D (Point2D& first, Point2D& second);
+	Line2D (Point2D const &first, Point2D const &second);
 };
 
 struct Segment2D {
 	Point2D   start;
 	Point2D     end;
 	Line2D equation;
-	Vector2D normal;	
+	Vector2D normal;
 
-	Segment2D(Point2D& start_, Point2D& end_);
-	void set_normal(Point2D& point);
+	Segment2D(Point2D const &start_, Point2D const &end_) : start(start_), end(end_), equation(start_, end_) {
+		normal.x = equation.a;
+		normal.y = equation.b;
+	}
+	void set_normal(Point2D const &point);
 };
 
 struct SignDist2D {
@@ -51,7 +62,7 @@ struct SignDist2D {
 	double SD_B;
 	double SD_C;
 
-	SignDist2D(Triangle2D& trian, Segment2D& seg);
+	SignDist2D(Triangle2D const &trian, Segment2D const &seg);
 
 	bool check_intersect();
 };
@@ -61,7 +72,7 @@ struct Segment2DTriangle {
 	Segment2D seg_B;
 	Segment2D seg_C;
 
-	Segment2DTriangle(Triangle2D& trian) : seg_A(trian.A, trian.B), seg_B(trian.B, trian.C), seg_C(trian.C, trian.A) {
+	Segment2DTriangle(Triangle2D const &trian) : seg_A(trian.A, trian.B), seg_B(trian.B, trian.C), seg_C(trian.C, trian.A) {
 		seg_A.set_normal(trian.C);
 		seg_B.set_normal(trian.A);
 		seg_C.set_normal(trian.B);
@@ -78,7 +89,9 @@ struct SignDist2DTriangle { //From points to 3 segment
 		to_A(to, first), to_B(to, second), to_C(to, third) {}
 };
 
-bool check_internal(SignDist2DTriangle& tr);
-double count_sign_dist(Point2D& point, Line2D& line);
-bool check_intersect_triangle(SignDist2DTriangle& first_from, SignDist2DTriangle& second_from, Segment2DTriangle& seg_first, Segment2DTriangle& seg_second);
-bool check_segments(double first_left, double first_right, double second_left, double second_right, Segment2D& first, Segment2D& second);
+bool check_internal(SignDist2DTriangle const &tr);
+double count_sign_dist(Point2D const &point, Line2D const &line);
+bool check_intersect_triangle(SignDist2DTriangle const &first_from, SignDist2DTriangle const &second_from, Segment2DTriangle const &seg_first, Segment2DTriangle const &seg_second);
+bool check_segments(double first_left, double first_right, double second_left, double second_right, Segment2D const &first, Segment2D const &second);
+
+}

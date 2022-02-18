@@ -1,39 +1,37 @@
 
 #include "Geometry2D.h"
 
-Line2D::Line2D (Point2D& first, Point2D& second) {
+namespace Triangles {
+
+Line2D::Line2D (Point2D const &first, Point2D const &second) {
 	a = second.y - first.y;
 	b = first.x - second.x;
 	c = first.y * second.x - first.x * second.y;
 }
 
-Segment2D::Segment2D(Point2D& start_, Point2D& end_) : start(start_), end(end_), equation(start_, end_) {
-	normal.x = equation.a;
-	normal.y = equation.b;
-}
-void Segment2D::set_normal(Point2D& point) {
+void Segment2D::set_normal(Point2D const &point) {
 	if (less_double(equation.a * point.x + equation.b * point.y + equation.c, 0)) {
 		normal.x = -(normal.x);
 		normal.y = -(normal.y);
 	}
 }
 
-SignDist2D::SignDist2D(Triangle2D& trian, Segment2D& seg) { //From point to segment
+SignDist2D::SignDist2D(Triangle2D const &trian, Segment2D const &seg) { //From point to segment
 	SD_A = count_sign_dist(trian.A, seg.equation);
 	SD_B = count_sign_dist(trian.B, seg.equation);
 	SD_C = count_sign_dist(trian.C, seg.equation);
 }
 
-bool check_internal(SignDist2DTriangle& tr) {
+bool check_internal(SignDist2DTriangle const &tr) {
 	if (   great_double(tr.to_A.SD_A, 0) && great_double(tr.to_A.SD_B, 0) && great_double(tr.to_A.SD_C, 0) 
 		&& great_double(tr.to_B.SD_A, 0) && great_double(tr.to_B.SD_B, 0) && great_double(tr.to_B.SD_C, 0) 
 		&& great_double(tr.to_C.SD_A, 0) && great_double(tr.to_C.SD_B, 0) && great_double(tr.to_C.SD_C, 0)) return true;
 	return false;
 }
-double count_sign_dist(Point2D& point, Line2D& line) {
+double count_sign_dist(Point2D const &point, Line2D const &line) {
 	return (line.a * point.x + line.b * point.y + line.c);
 }
-bool check_intersect_triangle(SignDist2DTriangle& first_from, SignDist2DTriangle& second_from, Segment2DTriangle& seg_first, Segment2DTriangle& seg_second) {
+bool check_intersect_triangle(SignDist2DTriangle const &first_from, SignDist2DTriangle const &second_from, Segment2DTriangle const &seg_first, Segment2DTriangle const &seg_second) {
 
 	if (check_segments(first_from.to_A.SD_A, first_from.to_A.SD_B, second_from.to_A.SD_A, second_from.to_A.SD_B, seg_second.seg_A, seg_first.seg_A)) return true;
 	if (check_segments(first_from.to_A.SD_B, first_from.to_A.SD_C, second_from.to_B.SD_A, second_from.to_B.SD_B, seg_second.seg_B, seg_first.seg_A)) return true;
@@ -49,7 +47,8 @@ bool check_intersect_triangle(SignDist2DTriangle& first_from, SignDist2DTriangle
 
 	return false;
 }
-bool check_segments(double first_left, double first_right, double second_left, double second_right, Segment2D& first, Segment2D& second) {
+bool check_segments(double first_left, double first_right, double second_left, double second_right, Segment2D const &first, Segment2D const &second) {
+
 	if (equal_double(first_left, 0) && equal_double(first_right, 0) && equal_double(second_left, 0) && equal_double(second_right, 0)) {
 
 		if (!equal_double(first.start.x, first.end.x)) { 
@@ -81,4 +80,6 @@ bool check_segments(double first_left, double first_right, double second_left, d
 Vector2D cut_vec_to_2D(Vector vec) {
 	Vector2D ret(vec.x, vec.y);
 	return ret;
+}
+
 }
