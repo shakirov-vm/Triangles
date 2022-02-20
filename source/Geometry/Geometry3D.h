@@ -137,7 +137,7 @@ struct SignDist {
 	double dist_V_2;
 
 	SignDist (Surface const &surf, Triangle const &trian);
-	void SignDist::dump() const {
+	void dump() const {
 	    std::cout << "SignDist: " << dist_V_0 << ", " << dist_V_1 << ", " << dist_V_2 << std::endl;
 	}
 };
